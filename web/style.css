@@ -5,3 +5,25 @@ header{position:sticky;top:0;z-index:5;background:#fbfcf9f5;border-bottom:1px so
 @media(max-width:800px){.wrap{width:calc(100% - 28px)}.nav{display:grid;grid-template-columns:1fr auto;gap:0;padding-top:6px}.langs{grid-column:2;grid-row:1}.brand{grid-column:1;grid-row:1}nav{grid-column:1/-1;justify-content:space-between;gap:0}nav a{padding:7px 5px;font-size:13px}html{scroll-padding-top:98px}.columns{grid-template-columns:1fr}.heroArt{width:35%;opacity:.82}.herotext{max-width:73%;padding:19px}.hero{min-height:180px}.graphTop{flex-wrap:wrap}.resourcesGrid{grid-template-columns:1fr 1fr}.resourcesGrid article:last-child{grid-column:1/-1}#stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:500px){.wrap{width:calc(100% - 20px)}.hero{margin-top:10px}.herotext{max-width:100%;padding:16px}.heroArt{width:35%;inset:auto 0 0 auto;height:78px}.hero p{max-width:96%;font-size:14px}.introLinks{max-width:76%;gap:6px;flex-wrap:wrap}.introLinks a{font-size:13px;padding:6px 8px}.graphTop{gap:10px}.tabs button{padding:6px 8px}.stat{padding:10px}.stat small{font-size:12px}.row{gap:3px}.row b{font-size:14px}.row small{font-size:12px}.resourcesGrid{grid-template-columns:1fr;gap:15px}.resourcesGrid article+article{border-top:1px solid var(--line);padding-top:12px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+.walletLegend{font-size:13px;color:var(--muted);margin:4px 0}
+.walletIdentity{display:inline-flex;align-items:baseline;flex-wrap:wrap;gap:2px 6px;max-width:100%;vertical-align:baseline}
+.row .walletAddress{font-weight:700;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+.row .walletAddress.buy,.walletRole.buy{color:#126042}
+.row .walletAddress.sell,.walletRole.sell{color:#a62438}
+.row .walletAddress.burn,.walletRole.burn{color:#874305}
+.row .walletAddress.neutral{color:#51615c}
+.walletRole{font-size:11px;font-weight:600}
+.row .domainBadge{font:600 11px/1.4 system-ui,sans-serif;letter-spacing:0;padding:2px 6px;border-radius:5px;overflow-wrap:anywhere;max-width:100%;display:inline-block}
+.domainBadge.digits{color:#644005;background:#ffdf78;border:1px solid #c59626}
+.domainBadge.sub{color:#472278;background:#ebdbff;border:1px solid #b58bdc}
+details.domainDetails{display:inline-block;border:0;padding:0;font-size:12px;font-weight:500;width:100%}
+details.domainDetails summary{color:var(--muted);font-size:11px}
+#rank .position{vertical-align:top}
+.onlyBadges{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;margin:4px 0 7px;cursor:pointer}
+.onlyBadges input{width:16px;height:16px;accent-color:var(--green)}
+
+.walletIdentity.hasDigits .walletAddress,.walletIdentity.hasSub .walletAddress{border-radius:4px;padding:1px 4px}
+.walletIdentity.hasDigits .walletAddress{background:#ffedb2}
+.walletIdentity.hasSub .walletAddress{background:#ebddff}
+.walletIdentity.hasDigits.hasSub .walletAddress{background:linear-gradient(105deg,#ffedb2 48%,#ebddff 52%)}

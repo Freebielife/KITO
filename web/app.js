@@ -57,6 +57,59 @@ function addr(raw,name) {
   a.title=wallet+" · gram.org";
   return a;
 }
+const walletLabels = {
+  ru:{buy:"Покупатель",sell:"Продавец",burn:"Сжигание",activeBuy:"Посл. покупка",activeSell:"Посл. продажа",
+      digits:"4 цифры",sub:"Субдомен",checked:"Проверено владение",moreNames:"Ещё домены",
+      key:"Цвет адреса показывает роль кошелька в этой операции.", holderKey:"Цвет адреса — по последней сделке в истории пула. Серый — сделка не найдена.",
+      method:"Доменные метки показывают владение, проверенное на дату снимка. «4 цифры» — имя вида 0123.ton. Золотая метка — четырёхзначный домен .ton; фиолетовая — субдомен коллекции *.socool.ton. Отсутствие метки не доказывает отсутствие домена."},
+  en:{buy:"Buyer",sell:"Seller",burn:"Burn",activeBuy:"Last trade: buy",activeSell:"Last trade: sell",
+      digits:"4 digits",sub:"Subdomain",checked:"Ownership checked",moreNames:"More domains",
+      key:"The address colour identifies the wallet’s role in this transaction.",holderKey:"Address colours show the last observed pool trade. Grey means no trade was found in the archive.",
+      method:"Domain badges indicate ownership at the time of the check. “4 digits” means a name such as 0123.ton. Gold marks a four-digit .ton domain; violet marks a *.socool.ton subdomain. An address without a badge may still own a domain."}
+};
+texts.ru.withBadges="Только адреса с доменной меткой";
+texts.en.withBadges="Only wallets with a domain badge";
+texts.ru.noneTagged="Среди проверенных адресов для этого фильтра записей нет.";
+texts.en.noneTagged="No records from verified domain holders match this filter.";
+const wl=key=>walletLabels[lang][key];
+function hasDomainBadge(wallet){
+  const record=snapshot.domains?.byWallet?.[wallet];
+  return Boolean(record?.digits?.length||record?.sub?.length);
+}
+function walletIdentity(raw,name,kind,latest=false){
+  const wrapper=el("span",undefined,"walletIdentity");
+  const address=addr(raw,name);
+  address.className="walletAddress "+(kind||"neutral");
+  if(kind){
+    const key=latest?(kind==="buy"?"activeBuy":"activeSell"):kind;
+    wrapper.append(el("span",wl(key),"walletRole "+kind));
+  }
+  wrapper.append(address);
+  const record=snapshot.domains?.byWallet?.[raw];
+  if(!record)return wrapper;
+  for(const type of ["digits","sub"]){
+    const names=record[type]||[];
+    if(!names.length)continue;
+    wrapper.classList.add(type==="digits"?"hasDigits":"hasSub");
+    const badge=el("span",wl(type)+" · "+names[0],"domainBadge "+type);
+    badge.title=wl("checked")+" · "+stamp(type==="digits"?record.digitsAt:record.subAt);
+    wrapper.append(badge);
+    if(names.length>1){
+      const rest=el("details",undefined,"domainDetails");
+      rest.append(el("summary",wl("moreNames")+" (+"+(names.length-1)+")"),
+        el("span",names.slice(1).join(" · ")));
+      wrapper.append(rest);
+    }
+  }
+  return wrapper;
+}
+function lastTradeByWallet(){
+  const latest=new Map();
+  for(const r of snapshot.trades?.rows||[]){
+    if(!latest.has(r.wallet))latest.set(r.wallet,r.kind);
+  }
+  return latest;
+}
 function tx(row){const a=link("https://gram.org/tx/"+row.tx,t("openTx"));a.title=row.tx;return a}
 function select(id,labels,selected,onClick){const node=$(id);node.replaceChildren();labels.forEach((name,i)=>{const b=el("button",name);b.classList.toggle("on",i===selected);b.setAttribute("aria-pressed",i===selected);b.onclick=()=>onClick(i);node.append(b)})}
 function freshness(s){if(!s?.asOf)return t("no");return t("updated")+" "+stamp(s.asOf)+(Date.now()/1000-s.asOf>4*3600?" · "+t("delayed"):"")}
@@ -145,34 +198,37 @@ function list(){
  const kinds=["all","buy","sell","burn"];
  select("filters",[t("filterAll"),t("buys"),t("sells"),t("burnCount")],kinds.indexOf(feedKind),i=>{feedKind=kinds[i];expanded=false;list()});
  const combined=[...(snapshot.trades?.rows||[]),...(snapshot.burns?.rows||[])]
-   .filter(r=>feedKind==="all"||r.kind===feedKind).sort((a,b)=>b.time-a.time||a.tx.localeCompare(b.tx)).slice(0,50);
+   .filter(r=>(feedKind==="all"||r.kind===feedKind)&&(!$("feedDomains").checked||hasDomainBadge(r.wallet))).sort((a,b)=>b.time-a.time||a.tx.localeCompare(b.tx)).slice(0,50);
  const clock=feedKind==="burn"?snapshot.burns:snapshot.trades;
  $("feedNote").textContent=(feedKind==="all"?t("feedTime")+" · ":"")+freshness(clock);
  $("feed").replaceChildren(...combined.slice(0,expanded?50:20).map(r=>{
-   const who=el("small");who.append(addr(r.wallet,r.name));
+   const who=el("small");who.append(walletIdentity(r.wallet,r.name,r.kind));
    const top=el("b");top.append(el("span",t(r.kind),"badge "+r.kind),document.createTextNode(format(r.kito,4)+" KITO"));
    const details=el("small");details.append(tx(r));
    const right=el("small");if(r.ton)right.append(el("b",format(r.ton,4)+" TON"));
    right.append(document.createTextNode(stamp(r.time)));return row(top,who,right,details)
  }));
- if(!combined.length)$("feed").append(el("p",t("none"),"empty"));
+ if(!combined.length)$("feed").append(el("p",t($("feedDomains").checked?"noneTagged":"none"),"empty"));
  $("more").hidden=combined.length<=20;$("more").textContent=expanded?t("less"):t("more").replace("30",String(Math.min(30,combined.length-20)));
 }
 function ranks(){
+ const lastActivity=lastTradeByWallet();
  const isHolder=ranking==="holders",source=isHolder?snapshot.holders:snapshot.trades;
- $("rankDescription").textContent=t(isHolder?"holderHint":"sellerHint");
+ $("rankDescription").textContent=t(isHolder?"holderHint":"sellerHint")+(isHolder?" "+wl("holderKey"):"");
  select("views",[t("holders"),t("sellers")],isHolder?0:1,i=>{ranking=i?"sellers":"holders";ranks()});
  $("sellerPeriods").replaceChildren();if(!isHolder)select("sellerPeriods",t("dayLabels"),[1,7,30].indexOf(sellerDays),i=>{sellerDays=[1,7,30][i];ranks()});
  let data;if(isHolder){data=source?.holders||[];$("rankNote").textContent=freshness(source)+(source?" · "+t("allHolders")+" "+format(source.holderCount,0):"")}
  else{const groups=new Map(),cut=(source?.asOf||0)-sellerDays*day;for(const r of source?.rows||[]){if(r.kind!=="sell"||r.time<=cut||r.time>source.asOf)continue;const g=groups.get(r.wallet)||{...r,kito:0,count:0};g.kito+=Number(r.kito);g.count++;groups.set(r.wallet,g)}data=[...groups.values()].sort((a,b)=>b.kito-a.kito).slice(0,20);$("rankNote").textContent=[freshness(source),coverage(source,cut)].filter(Boolean).join(" · ")}
- $("rank").replaceChildren(...data.map((r,i)=>{const title=el("b");title.append(el("span",String(i+1).padStart(2,"0"),"position"),addr(r.wallet,r.name));return row(title,el("small",isHolder?t("balance"):t("sold")),el("b",format(r.kito)+" KITO"),el("small",isHolder?format(r.share,4)+"%":(lang==="ru"?"Сделок: ":"Trades: ")+format(r.count,0)))}));if(!data.length)$("rank").append(el("p",source?t("none"):t("no"),"empty"))
+ $("rank").replaceChildren(...data.map((r,i)=>{const title=el("b");title.append(el("span",String(i+1).padStart(2,"0"),"position"),walletIdentity(r.wallet,r.name,isHolder?lastActivity.get(r.wallet):"sell",isHolder));return row(title,el("small",isHolder?t("balance"):t("sold")),el("b",format(r.kito)+" KITO"),el("small",isHolder?format(r.share,4)+"%":(lang==="ru"?"Сделок: ":"Trades: ")+format(r.count,0)))}));if(!data.length)$("rank").append(el("p",source?t("none"):t("no"),"empty"))
 }
 function render(){document.documentElement.lang=lang;document.querySelectorAll("[data-t]").forEach(n=>n.textContent=t(n.dataset.t));for(const l of ["ru","en"]){$(l).classList.toggle("on",l===lang);$(l).setAttribute("aria-pressed",l===lang);$(l).onclick=()=>{lang=l;try{localStorage.setItem("kito-lang",l)}catch{}render()}}
+ $("walletLegend").textContent=wl("key");$("domainLegend").textContent=wl("method");
  select("periods",t("periodNames"),period,i=>{period=i;render()});$("copy").textContent=t("copy");$("contract").href="https://gram.org/jetton/"+MASTER;$("contract").textContent=MASTER;chart();stats();list();ranks()}
 $("copy").onclick=async()=>{try{await navigator.clipboard.writeText(MASTER);$("copy").textContent=t("copied")}catch{window.prompt(t("copy"),MASTER)}};
+$("feedDomains").onchange=()=>{expanded=false;list()};
 $("more").onclick=()=>{expanded=!expanded;list()};window.addEventListener("resize",chart);render();
 const sources=["https://raw.githubusercontent.com/Freebielife/KITO/main/data/snapshot.json","https://freebielife.github.io/KITO/data/snapshot.json"];
-async function refresh(){for(const url of sources){try{const res=await fetch(url+"?v="+Math.floor(Date.now()/600000),{signal:AbortSignal.timeout(7000)});if(!res.ok)continue;const s=await res.json();if(s.schema!==1||!Number.isFinite(s.updated))continue;if(s.updated>=(snapshot.updated||0)){snapshot=s;render();return}}catch{}}}
+async function refresh(){for(const url of sources){try{const res=await fetch(url+"?v="+Math.floor(Date.now()/600000),{signal:AbortSignal.timeout(7000)});if(!res.ok)continue;const s=await res.json();if(s.schema!==1||!Number.isFinite(s.updated)||(snapshot.domains&&!s.domains))continue;if(s.updated>=(snapshot.updated||0)){snapshot=s;render();return}}catch{}}}
 refresh();setInterval(refresh,600000);window.addEventListener("online",refresh);document.addEventListener("visibilitychange",()=>{if(!document.hidden)refresh()});
 
 const jumps=Array.from(document.querySelectorAll("#nav a"));

@@ -6,6 +6,7 @@ import time
 from pathlib import Path
 
 import assets
+import domains
 import trades
 
 ROOT = Path(__file__).resolve().parent
@@ -50,7 +51,13 @@ def refresh():
         except Exception as error:
             errors.append(key)
             print(key, "FAILED:", error, file=sys.stderr, flush=True)
-    if len(errors) < 3:
+    core_updated = len(errors) < 3
+    if core_updated:
+        try:
+            snapshot["domains"] = domains.enrich(snapshot, now)
+        except Exception as error:
+            errors.append("domains")
+            print("domains FAILED:", error, file=sys.stderr, flush=True)
         snapshot.update(schema=1, updated=now, errors=errors)
         DATA.parent.mkdir(exist_ok=True)
         save(DATA, snapshot)
