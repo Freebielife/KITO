@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 210" fill="none" aria-hidden="true" focusable="false">
+  <defs>
+    <pattern id="kito-dots" x="0" y="0" width="5" height="5" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r=".65" fill="#CDDBB7"/>
+    </pattern>
+    <clipPath id="kito-lens">
+      <path d="m196 94 44 2-8 19-27-2zm60 0 66-10-22 25-40 5z"/>
+    </clipPath>
+  </defs>
+
+  <!-- Star field and the far side of the orbital plane. -->
+  <g fill="#DCE4D6">
+    <path d="m401 18 2.1 7.6 7.6 2.1-7.6 2.2-2.1 7.5-2.1-7.5-7.6-2.2 7.6-2.1z"/>
+    <path d="m101 96 1.4 4.2 4.2 1.4-4.2 1.3-1.4 4.3-1.3-4.3-4.3-1.3 4.3-1.4z"/>
+    <path d="m414 143 1.2 4 4.2 1.2-4.2 1.4-1.2 4-1.2-4-4.2-1.4 4.2-1.2z"/>
+    <circle cx="60" cy="140" r="1.1"/><circle cx="131" cy="58" r="1.3"/>
+    <circle cx="385" cy="61" r="1.5"/><circle cx="349" cy="188" r="1.2"/>
+    <circle cx="445" cy="97" r="1"/><circle cx="132" cy="185" r="1"/>
+    <path d="M141 17c-13 1-21 14-16 26s18 17 29 10c-14 0-23-11-21-23 1-5 4-10 8-13Z"/>
+  </g>
+  <g stroke="#ADBEA7" stroke-linecap="round">
+    <ellipse cx="263" cy="119" rx="174" ry="47" transform="rotate(-17 263 119)" opacity=".49" stroke-width="1.3"/>
+    <path d="M119 147c11-16 36-35 72-53m148-45c39-4 63-1 74 6" stroke-dasharray="3 6" opacity=".46"/>
+    <path d="M365 126c11 16 17 30 15 41-1 7-5 13-11 16" opacity=".34"/>
+  </g>
+
+  <!-- The tilted silhouette, drawn with a cool rim so the ears survive on charcoal. -->
+  <g stroke-linejoin="round" stroke-linecap="round">
+    <path d="m180 180 21-7 26-24-4-14-21-6-20-23 7 1-8-13 9 1-3-16 8 3 3-28-5-34q1-10 10-4l42 29q21-10 45-9l26-24q8-8 11 3l6 42 10 10-4 2 9 12-3 2 6 13 9-4-5 11 9-2-12 16-19 13-16 6 17 8 19 17-20 4-52 16-65 9-26-4-17-9z"
+          fill="#0D1516" stroke="#AAB9AB" stroke-width="2.2"/>
+    <path d="m202 30 28 21-21 9zm111-5-13 17 18 5z" fill="#647572"/>
+    <path d="m204 34 16 17-10 4zm109-3-7 11 9 1z" fill="#33413F"/>
+    <path d="M214 70c11-14 32-22 55-23-15 5-26 11-34 19 21-9 39-10 53-6-28 3-43 10-59 20z" fill="#22302E"/>
+    <path d="m329 73 9 11-5 2 10 10-5 1 3 10-10 4-7 13-16 10 15-1-10 8 11-3-13 9 16-4 20-18 8-13-7 2 3-6-8 2-5-11 3-3-7-8 3-2z" fill="#35443F"/>
+    <path d="M191 109c7 20 21 32 40 33l9-4-5 8 17-6c16 2 32-1 45-9-9 12-22 20-38 24-8 2-18 2-26 0l-10-16-18-4z" fill="#35443F"/>
+    <path d="m227 158-13 17 8-1-9 12 24 2c27-6 42-16 50-27-17 11-37 14-52 11l6-6-11 2 5-9z" fill="#23312F"/>
+    <path d="m312 154 16 6 14 8-33 10-20 4c16-8 24-17 23-28Z" fill="url(#kito-dots)" opacity=".6"/>
+
+    <!-- Angular oversize sunglasses. -->
+    <path d="m182 88 57-1 10 2 8-2 73-11 10 2-5 8-12 3-18 23-47 8-12-17-7 16-36-2-14-19-9-2z"
+          fill="#0A1313" stroke="#111918" stroke-width="4"/>
+    <path d="m181 87 58-1 11 3 8-4 73-10 10 3-4 5-9 4-21 25-49 8-12-18-7 16-36-2-14-20-8-2z"
+          fill="#CBF77B"/>
+    <path d="m196 94 44 2-8 19-27-2zm60 0 66-10-22 25-40 5z" fill="#293B31"/>
+    <g clip-path="url(#kito-lens)" fill="#DAF5AA">
+      <path d="m182 120 31-40h8l-32 40zm9 1 32-41h3l-32 41zm69 2 39-50h10l-39 50zm15-2 36-47h3l-36 47z"/>
+    </g>
+    <path d="m186 89 48-.5m27-.8 65-9" stroke="#EBFFCC" stroke-width="1.4"/>
+    <!-- Nose, sly grin and whiskers. -->
+    <path d="m238 123 15-3-5 8-6 1z" fill="#9FB0A1"/>
+    <path d="m244 130 3 3c6 2 13 0 18-5" stroke="#BECABC" stroke-width="1.7"/>
+    <path d="m206 126-29-4m32 9-27 4m108-13 32-8m-30 13 36-2" stroke="#A1B1A4" stroke-width="1.3"/>
+    <path d="m252 143 6-2m-5-2 3-1" stroke="#71827B" stroke-width="1.5"/>
+  </g>
+
+  <!-- Bright foreground orbital arc separates the silhouette from the background. -->
+  <path d="M98 163c3 12 32 17 71 15 61-3 132-23 192-50 38-17 63-34 70-49" stroke="#C8F582" stroke-width="1.9" stroke-linecap="round"/>
+  <circle cx="159" cy="178.6" r="3.5" fill="#DBFF9E"/><circle cx="159" cy="178.6" r="6.6" stroke="#CBF77B" opacity=".5"/>
+  <path d="m92 47 9-5m-5 10 14-8m-6 10 6-4" stroke="#8C9E91" opacity=".67" stroke-linecap="round"/>
+</svg>
