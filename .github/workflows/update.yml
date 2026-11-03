@@ -1,0 +1,41 @@
+name: Refresh KITO data
+on:
+  schedule:
+    - cron: '17 */2 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '*.py'
+      - 'web/**'
+      - '.github/workflows/update.yml'
+permissions:
+  contents: write
+concurrency:
+  group: kito-market-data
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Collect market activity
+        id: collect
+        continue-on-error: true
+        run: python3 collect.py
+      - name: Build standalone page and publish available data
+        run: |
+          test -s data/snapshot.json
+          python3 build.py
+          python3 verify.py
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/snapshot.json index.html
+          if ! git diff --cached --quiet; then
+            git commit -m "Refresh KITO snapshot"
+            git push
+          fi
+      - name: Flag partial collection
+        if: steps.collect.outcome == 'failure'
+        run: exit 1
