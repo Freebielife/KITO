@@ -1,34 +1,155 @@
 "use strict";
 const MASTER="EQCSLLVQ8qdhEqZUKaiKU7F6sVfnNPmQ4FsCpCo8olo795LP";
-const texts={
-ru:{intro:"Ончейн-аналитика токена KITO в сети TON",swap:"Обменять ↗",price:"Цена сделки",summary:"KITO за 24 часа",activity:"Последние операции",wallets:"Кошельки",domain:"Свой .socool.ton",domainText:"Получить свой субдомен из коллекции socool.ton в @KitoSoCoolBot",domainLink:"Получить свой субдомен",project:"Сайт проекта ↗",method:"Источники и методика",methodText:"График строится по успешным сделкам пула KITO / TON на DeDust. Курс — количество KITO за 1 GRAM в сделке. Линия соединяет последние сделки каждого интервала. Сжигания подтверждаются контрактом KITO. Доля держателя считается от общего предложения. Сумма продаж — все проданные кошельком KITO за период. Данные обновляются раз в два часа.",buy:"Покупка",sell:"Продажа",burn:"Сжигание",holders:"Холдеры",sellers:"Продавцы",more:"Ещё 30",less:"Свернуть",copy:"Копировать адрес",copied:"Скопировано",no:"Нет данных",noTrades:"За этот период в проверенной истории нет сделок.",partial:"Частичная история",since:"История с",updated:"Данные на",h:"ч",d:"д",quarter:"Покупки / продажи",volume:"Объём покупок / продаж",users:"Покупатели / продавцы",burned:"Сожжено KITO",none:"За период записей нет",sold:"Продано KITO",balance:"Баланс KITO",periods:["1ч","1д","1н","1м","6м","1г"],total:"Адресов",all:"Показать все",delayed:"Обновление задерживается",chart:"История цены",tx:"Транзакция",deals:"сделок",burnCount:"Сжигания",tradeSource:"Сделки",stale:"Последний сбор неполный",buySell:"куплено / продано"},
-en:{intro:"On-chain analytics for KITO on TON",swap:"Swap ↗",price:"Trade price",summary:"KITO in 24 hours",activity:"Latest activity",wallets:"Wallets",domain:"Your .socool.ton",domainText:"Get your subdomain from the socool.ton collection in @KitoSoCoolBot.",domainLink:"Get your subdomain",project:"Project website ↗",method:"Sources and methodology",methodText:"Prices use successful trades in the KITO / TON DeDust pool. The rate is the amount of KITO per 1 GRAM in a trade. The line connects the last trade in each interval. Burns are confirmed by the KITO contract. Holder shares use total token supply. Seller rankings sum the amount of KITO sold per wallet over the selected window. Data refreshes every two hours.",buy:"Buy",sell:"Sell",burn:"Burn",holders:"Holders",sellers:"Sellers",more:"30 more",less:"Collapse",copy:"Copy address",copied:"Copied",no:"No data",noTrades:"No trades in the verified history for this period.",partial:"Partial history",since:"History from",updated:"Data as of",h:"h",d:"d",quarter:"Buys / sells",volume:"Buy / sell volume",users:"Buyers / sellers",burned:"KITO burned",none:"No records for this period",sold:"KITO sold",balance:"KITO balance",periods:["1H","1D","1W","1M","6M","1Y"],total:"Addresses",all:"Show all",delayed:"Update overdue",chart:"Price history",tx:"Transaction",deals:"trades",burnCount:"Burns",tradeSource:"Trades",stale:"Last collection incomplete",buySell:"bought / sold"}};
-Object.assign(texts.ru, {
-  projectDirectory:"Все ресурсы KITO ↗", navMarket:"Рынок", links:"Ссылки", toMarket:"К графику ↓", up:"Наверх ↑", swap:"Обмен на DeDust ↗",
-  price:"Курс последней сделки", intro:"Цена, сделки и держатели KITO в сети TON.",
-  chartKey:"KITO за 1 GRAM", burnKey:"🔥 Сжигание", pointHint:"Коснись графика или выбери точку стрелками ← →.",
-  activity:"Операции", activityHint:"Покупки и продажи из пула DeDust и сжигания токена.",
-  wallets:"Рейтинги", holders:"Держатели", sellers:"Продавцы", filterAll:"Все", buys:"Покупки", sells:"Продажи",
-  people:"Кошельки", buyers:"покупатели", sellersLabel:"продавцы", volumeUnit:"Объём", burnLabel:"Сжигания",
-  burnedTotal:"Сожжено", events:"Операций", openTx:"На gram.org ↗", allHolders:"Всего адресов",
-  holderHint:"Крупнейшие остатки KITO и доля от общего предложения.", sellerHint:"Кошельки по сумме проданных KITO за выбранный период.",
-  projectResources:"Сообщество и рынок",projectHint:"Каналы проекта, обмен и график пары.",
-  contractLabel:"Контракт KITO",domainText:"Получить свой субдомен из коллекции socool.ton в @KitoSoCoolBot",
-  feedTime:"Сделки", periodNames:["1 час","День","Неделя","Месяц","6 мес.","Год"], dayLabels:["24 часа","7 дней","30 дней"]
-});
-Object.assign(texts.en, {
-  projectDirectory:"KITO link directory ↗", navMarket:"Market", links:"Links", toMarket:"View chart ↓", up:"Back to top ↑", swap:"Swap on DeDust ↗",
-  price:"Latest exchange rate", intro:"Price, trades and KITO holders on TON.",
-  chartKey:"KITO per 1 GRAM", burnKey:"🔥 Burn", pointHint:"Tap the chart or use the ← → arrow keys to inspect a trade.",
-  activity:"Activity", activityHint:"Buys and sells from the DeDust pool and confirmed token burns.",
-  wallets:"Rankings", holders:"Holders", sellers:"Sellers", filterAll:"All", buys:"Buys", sells:"Sells",
-  people:"Wallets", buyers:"buyers", sellersLabel:"sellers", volumeUnit:"Volume", burnLabel:"Burns",
-  burnedTotal:"Burned", events:"Transactions", openTx:"View on gram.org ↗", allHolders:"Total addresses",
-  holderHint:"Largest KITO balances and their share of the total supply.", sellerHint:"Wallets ranked by total KITO sold during the selected period.",
-  projectResources:"Community and market",projectHint:"Project channels, token swap and pool chart.",
-  contractLabel:"KITO contract",domainText:"Get your subdomain from the socool.ton collection in @KitoSoCoolBot.",
-  feedTime:"Trades", periodNames:["1 hour","Day","Week","Month","6 mo.","Year"], dayLabels:["24 hours","7 days","30 days"]
-});
+const texts = {
+  "ru": {
+    "intro": "Цена, сделки и держатели KITO в сети TON.",
+    "swap": "Обмен на DeDust ↗",
+    "price": "Курс последней сделки",
+    "summary": "KITO за 24 часа",
+    "activity": "Операции",
+    "wallets": "Рейтинги",
+    "domain": "Свой .socool.ton",
+    "domainText": "Получить свой субдомен из коллекции socool.ton в @KitoSoCoolBot",
+    "domainLink": "Получить свой субдомен",
+    "method": "Источники и методика",
+    "methodText": "График строится по успешным сделкам пула KITO / TON на DeDust. Курс — количество KITO за 1 GRAM в сделке. Линия соединяет последние сделки каждого интервала. Сжигания подтверждаются контрактом KITO. Доля держателя считается от общего предложения. Сумма продаж — все проданные кошельком KITO за период. Данные обновляются раз в два часа.",
+    "buy": "Покупка",
+    "sell": "Продажа",
+    "burn": "Сжигание",
+    "holders": "Держатели",
+    "sellers": "Продавцы",
+    "more": "Ещё 30",
+    "less": "Свернуть",
+    "copy": "Копировать адрес",
+    "copied": "Скопировано",
+    "no": "Нет данных",
+    "noTrades": "За этот период в проверенной истории нет сделок.",
+    "partial": "Частичная история",
+    "since": "История с",
+    "updated": "Данные на",
+    "none": "За период записей нет",
+    "sold": "Продано KITO",
+    "balance": "Баланс KITO",
+    "all": "Показать все",
+    "delayed": "Обновление задерживается",
+    "chart": "История цены",
+    "burnCount": "Сжигания",
+    "projectDirectory": "Все ресурсы KITO ↗",
+    "navMarket": "Рынок",
+    "links": "Ссылки",
+    "toMarket": "К графику ↓",
+    "up": "Наверх ↑",
+    "chartKey": "KITO за 1 GRAM",
+    "burnKey": "🔥 Сжигание",
+    "pointHint": "Коснись графика или выбери точку стрелками ← →.",
+    "activityHint": "Покупки и продажи из пула DeDust и сжигания токена.",
+    "filterAll": "Все",
+    "buys": "Покупки",
+    "sells": "Продажи",
+    "people": "Кошельки",
+    "buyers": "покупатели",
+    "sellersLabel": "продавцы",
+    "volumeUnit": "Объём",
+    "burnedTotal": "Сожжено",
+    "events": "Операций",
+    "openTx": "На gram.org ↗",
+    "allHolders": "Всего адресов",
+    "holderHint": "Крупнейшие остатки KITO и доля от общего предложения.",
+    "sellerHint": "Кошельки по сумме проданных KITO за выбранный период.",
+    "projectResources": "Сообщество и рынок",
+    "contractLabel": "Контракт KITO",
+    "feedTime": "Сделки",
+    "periodNames": [
+      "1 час",
+      "День",
+      "Неделя",
+      "Месяц",
+      "6 мес.",
+      "Год"
+    ],
+    "dayLabels": [
+      "24 часа",
+      "7 дней",
+      "30 дней"
+    ],
+    "withBadges": "Только адреса с доменной меткой",
+    "noneTagged": "Среди проверенных адресов для этого фильтра записей нет."
+  },
+  "en": {
+    "intro": "Price, trades and KITO holders on TON.",
+    "swap": "Swap on DeDust ↗",
+    "price": "Latest exchange rate",
+    "summary": "KITO in 24 hours",
+    "activity": "Activity",
+    "wallets": "Rankings",
+    "domain": "Your .socool.ton",
+    "domainText": "Get your subdomain from the socool.ton collection in @KitoSoCoolBot.",
+    "domainLink": "Get your subdomain",
+    "method": "Sources and methodology",
+    "methodText": "Prices use successful trades in the KITO / TON DeDust pool. The rate is the amount of KITO per 1 GRAM in a trade. The line connects the last trade in each interval. Burns are confirmed by the KITO contract. Holder shares use total token supply. Seller rankings sum the amount of KITO sold per wallet over the selected window. Data refreshes every two hours.",
+    "buy": "Buy",
+    "sell": "Sell",
+    "burn": "Burn",
+    "holders": "Holders",
+    "sellers": "Sellers",
+    "more": "30 more",
+    "less": "Collapse",
+    "copy": "Copy address",
+    "copied": "Copied",
+    "no": "No data",
+    "noTrades": "No trades in the verified history for this period.",
+    "partial": "Partial history",
+    "since": "History from",
+    "updated": "Data as of",
+    "none": "No records for this period",
+    "sold": "KITO sold",
+    "balance": "KITO balance",
+    "all": "Show all",
+    "delayed": "Update overdue",
+    "chart": "Price history",
+    "burnCount": "Burns",
+    "projectDirectory": "KITO link directory ↗",
+    "navMarket": "Market",
+    "links": "Links",
+    "toMarket": "View chart ↓",
+    "up": "Back to top ↑",
+    "chartKey": "KITO per 1 GRAM",
+    "burnKey": "🔥 Burn",
+    "pointHint": "Tap the chart or use the ← → arrow keys to inspect a trade.",
+    "activityHint": "Buys and sells from the DeDust pool and confirmed token burns.",
+    "filterAll": "All",
+    "buys": "Buys",
+    "sells": "Sells",
+    "people": "Wallets",
+    "buyers": "buyers",
+    "sellersLabel": "sellers",
+    "volumeUnit": "Volume",
+    "burnedTotal": "Burned",
+    "events": "Transactions",
+    "openTx": "View on gram.org ↗",
+    "allHolders": "Total addresses",
+    "holderHint": "Largest KITO balances and their share of the total supply.",
+    "sellerHint": "Wallets ranked by total KITO sold during the selected period.",
+    "projectResources": "Community and market",
+    "contractLabel": "KITO contract",
+    "feedTime": "Trades",
+    "periodNames": [
+      "1 hour",
+      "Day",
+      "Week",
+      "Month",
+      "6 mo.",
+      "Year"
+    ],
+    "dayLabels": [
+      "24 hours",
+      "7 days",
+      "30 days"
+    ],
+    "withBadges": "Only wallets with a domain badge",
+    "noneTagged": "No records from verified domain holders match this filter."
+  }
+};
 let feedKind="all";
 const $=id=>document.getElementById(id);
 let snapshot=JSON.parse($("snapshot").textContent), lang="ru", period=1, ranking="holders", sellerDays=1, expanded=false;
@@ -67,10 +188,6 @@ const walletLabels = {
       key:"The address colour identifies the wallet’s role in this transaction.",holderKey:"Address colours show the last observed pool trade. Grey means no trade was found in the archive.",
       method:"Domain badges indicate ownership at the time of the check. “4 digits” means a name such as 0123.ton. Gold marks a four-digit .ton domain; turquoise marks a *.socool.ton subdomain. An address without a badge may still own a domain."}
 };
-texts.ru.withBadges="Только адреса с доменной меткой";
-texts.en.withBadges="Only wallets with a domain badge";
-texts.ru.noneTagged="Среди проверенных адресов для этого фильтра записей нет.";
-texts.en.noneTagged="No records from verified domain holders match this filter.";
 const wl=key=>walletLabels[lang][key];
 function hasDomainBadge(wallet){
   const record=snapshot.domains?.byWallet?.[wallet];
@@ -135,18 +252,18 @@ function chart(){
    const y=val=>138-(val-min)/(max-min)*114;
    for(const p of [max,(max+min)/2,min]){
      const height=y(p);
-     box.append(svg("path",{d:"M"+left+" "+height+"H"+right,stroke:"#dce4da","stroke-dasharray":"3 5"}));
+     box.append(svg("path",{d:"M"+left+" "+height+"H"+right,stroke:"#354453","stroke-dasharray":"3 5"}));
      const label=svg("text",{x:right+5,y:height+4});
      label.textContent=format(p,2);box.append(label);
    }
    const pts=prices.map(r=>[x(r.time),y(bucketPrice(r))]);
    if(pts.length>1){
-     box.append(svg("polygon",{points:[...pts,[pts.at(-1)[0],141],[pts[0][0],141]].join(" "),fill:"#daf0df"}));
-     box.append(svg("polyline",{points:pts.join(" "),fill:"none",stroke:"#207457","stroke-width":2.5,"stroke-linejoin":"round"}));
+     box.append(svg("polygon",{points:[...pts,[pts.at(-1)[0],141],[pts[0][0],141]].join(" "),fill:"#153d58"}));
+     box.append(svg("polyline",{points:pts.join(" "),fill:"none",stroke:"#30a1f5","stroke-width":2.5,"stroke-linejoin":"round"}));
    }
    const last=pts.at(-1);
-   box.append(svg("circle",{cx:last[0],cy:last[1],r:4,fill:"#216d52",stroke:"#fff","stroke-width":1.5}));
-   const cursor=svg("circle",{r:5,fill:"#294d3a",stroke:"#d7fa88","stroke-width":3,visibility:"hidden"});
+   box.append(svg("circle",{cx:last[0],cy:last[1],r:4,fill:"#30a1f5",stroke:"#fff","stroke-width":1.5}));
+   const cursor=svg("circle",{r:5,fill:"#10151c",stroke:"#8fd4ff","stroke-width":3,visibility:"hidden"});
    box.append(cursor);
    let active=pts.length-1;
    function inspect(i){

@@ -1,6 +1,5 @@
 """Build a static KITO snapshot. Each source keeps its last good result on failure."""
 import json
-import os
 import sys
 import time
 from pathlib import Path
