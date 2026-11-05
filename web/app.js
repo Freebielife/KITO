@@ -3,7 +3,7 @@ const MASTER="EQCSLLVQ8qdhEqZUKaiKU7F6sVfnNPmQ4FsCpCo8olo795LP";
 const texts = {
   "ru": {
     "intro": "Цена, сделки и держатели KITO в сети TON.",
-    "swap": "Обмен на DeDust ↗",
+    "swap": "Обмен на DeDust",
     "price": "Курс последней сделки",
     "summary": "KITO за 24 часа",
     "activity": "Операции",
@@ -11,8 +11,6 @@ const texts = {
     "domain": "Свой .socool.ton",
     "domainText": "Получить свой субдомен из коллекции socool.ton в @KitoSoCoolBot",
     "domainLink": "Получить свой субдомен",
-    "method": "Источники и методика",
-    "methodText": "График строится по успешным сделкам пула KITO / TON на DeDust. Курс — количество KITO за 1 GRAM в сделке. Линия соединяет последние сделки каждого интервала. Сжигания подтверждаются контрактом KITO. Доля держателя считается от общего предложения. Сумма продаж — все проданные кошельком KITO за период. Данные обновляются раз в два часа.",
     "buy": "Покупка",
     "sell": "Продажа",
     "burn": "Сжигание",
@@ -34,9 +32,10 @@ const texts = {
     "delayed": "Обновление задерживается",
     "chart": "История цены",
     "burnCount": "Сжигания",
-    "projectDirectory": "Все ресурсы KITO ↗",
+    "projectDirectory": "Все ресурсы KITO",
     "navMarket": "Рынок",
-    "links": "Ссылки",
+    "links": "Полезные ссылки",
+    "exploreContract": "Контракт на gram.org",
     "toMarket": "К графику ↓",
     "up": "Наверх ↑",
     "chartKey": "KITO за 1 GRAM",
@@ -52,7 +51,7 @@ const texts = {
     "volumeUnit": "Объём",
     "burnedTotal": "Сожжено",
     "events": "Операций",
-    "openTx": "На gram.org ↗",
+    "openTx": "На gram.org",
     "allHolders": "Всего адресов",
     "holderHint": "Крупнейшие остатки KITO и доля от общего предложения.",
     "sellerHint": "Кошельки по сумме проданных KITO за выбранный период.",
@@ -77,7 +76,7 @@ const texts = {
   },
   "en": {
     "intro": "Price, trades and KITO holders on TON.",
-    "swap": "Swap on DeDust ↗",
+    "swap": "Swap on DeDust",
     "price": "Latest exchange rate",
     "summary": "KITO in 24 hours",
     "activity": "Activity",
@@ -85,8 +84,6 @@ const texts = {
     "domain": "Your .socool.ton",
     "domainText": "Get your subdomain from the socool.ton collection in @KitoSoCoolBot.",
     "domainLink": "Get your subdomain",
-    "method": "Sources and methodology",
-    "methodText": "Prices use successful trades in the KITO / TON DeDust pool. The rate is the amount of KITO per 1 GRAM in a trade. The line connects the last trade in each interval. Burns are confirmed by the KITO contract. Holder shares use total token supply. Seller rankings sum the amount of KITO sold per wallet over the selected window. Data refreshes every two hours.",
     "buy": "Buy",
     "sell": "Sell",
     "burn": "Burn",
@@ -108,9 +105,10 @@ const texts = {
     "delayed": "Update overdue",
     "chart": "Price history",
     "burnCount": "Burns",
-    "projectDirectory": "KITO link directory ↗",
+    "projectDirectory": "KITO link directory",
     "navMarket": "Market",
-    "links": "Links",
+    "links": "Useful links",
+    "exploreContract": "Contract on gram.org",
     "toMarket": "View chart ↓",
     "up": "Back to top ↑",
     "chartKey": "KITO per 1 GRAM",
@@ -126,7 +124,7 @@ const texts = {
     "volumeUnit": "Volume",
     "burnedTotal": "Burned",
     "events": "Transactions",
-    "openTx": "View on gram.org ↗",
+    "openTx": "View on gram.org",
     "allHolders": "Total addresses",
     "holderHint": "Largest KITO balances and their share of the total supply.",
     "sellerHint": "Wallets ranked by total KITO sold during the selected period.",
@@ -181,12 +179,10 @@ function addr(raw,name) {
 const walletLabels = {
   ru:{buy:"Покупатель",sell:"Продавец",burn:"Сжигание",activeBuy:"Посл. покупка",activeSell:"Посл. продажа",
       digits:"4 цифры",sub:"Субдомен",checked:"Проверено владение",moreNames:"Ещё домены",
-      key:"Цвет адреса показывает роль кошелька в этой операции.", holderKey:"Цвет адреса — по последней сделке в истории пула. Серый — сделка не найдена.",
-      method:"Доменные метки показывают владение, проверенное на дату снимка. «4 цифры» — имя вида 0123.ton. Золотая метка — четырёхзначный домен .ton; бирюзовая — субдомен коллекции *.socool.ton. Отсутствие метки не доказывает отсутствие домена."},
+      key:"Цвет адреса показывает роль кошелька в этой операции.", holderKey:"Цвет адреса — по последней сделке в истории пула. Серый — сделка не найдена."},
   en:{buy:"Buyer",sell:"Seller",burn:"Burn",activeBuy:"Last trade: buy",activeSell:"Last trade: sell",
       digits:"4 digits",sub:"Subdomain",checked:"Ownership checked",moreNames:"More domains",
-      key:"The address colour identifies the wallet’s role in this transaction.",holderKey:"Address colours show the last observed pool trade. Grey means no trade was found in the archive.",
-      method:"Domain badges indicate ownership at the time of the check. “4 digits” means a name such as 0123.ton. Gold marks a four-digit .ton domain; turquoise marks a *.socool.ton subdomain. An address without a badge may still own a domain."}
+      key:"The address colour identifies the wallet’s role in this transaction.",holderKey:"Address colours show the last observed pool trade. Grey means no trade was found in the archive."}
 };
 const wl=key=>walletLabels[lang][key];
 function hasDomainBadge(wallet){
@@ -340,8 +336,8 @@ function ranks(){
  $("rank").replaceChildren(...data.map((r,i)=>{const title=el("b");title.append(el("span",String(i+1).padStart(2,"0"),"position"),walletIdentity(r.wallet,r.name,isHolder?lastActivity.get(r.wallet):"sell",isHolder));return row(title,el("small",isHolder?t("balance"):t("sold")),el("b",format(r.kito)+" KITO"),el("small",isHolder?format(r.share,4)+"%":(lang==="ru"?"Сделок: ":"Trades: ")+format(r.count,0)))}));if(!data.length)$("rank").append(el("p",source?t("none"):t("no"),"empty"))
 }
 function render(){document.documentElement.lang=lang;document.querySelectorAll("[data-t]").forEach(n=>n.textContent=t(n.dataset.t));for(const l of ["ru","en"]){$(l).classList.toggle("on",l===lang);$(l).setAttribute("aria-pressed",l===lang);$(l).onclick=()=>{lang=l;try{localStorage.setItem("kito-lang",l)}catch{}render()}}
- $("walletLegend").textContent=wl("key");$("domainLegend").textContent=wl("method");
- select("periods",t("periodNames"),period,i=>{period=i;render()});$("copy").textContent=t("copy");$("contract").href="https://gram.org/jetton/"+MASTER;$("contract").textContent=MASTER;chart();stats();list();ranks()}
+ $("walletLegend").textContent=wl("key");
+ select("periods",t("periodNames"),period,i=>{period=i;render()});$("copy").textContent=t("copy");$("contract").href="https://gram.org/jetton/"+MASTER;$("contractAddress").textContent=MASTER;chart();stats();list();ranks()}
 $("copy").onclick=async()=>{try{await navigator.clipboard.writeText(MASTER);$("copy").textContent=t("copied")}catch{window.prompt(t("copy"),MASTER)}};
 $("feedDomains").onchange=()=>{expanded=false;list()};
 $("more").onclick=()=>{expanded=!expanded;list()};window.addEventListener("resize",chart);render();
