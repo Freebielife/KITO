@@ -7,7 +7,7 @@ root = Path(__file__).resolve().parent
 data = root / "data/snapshot.json"
 snapshot = json.loads(data.read_text()) if data.exists() else {"schema": 1}
 template = (root / "web/page.html").read_text()
-for token, filename in (("/*STYLE*/", "style.css"), ("/*APP*/", "app.js"), ("<!--CAT-->", "cat-orbit.svg")):
+for token, filename in (("/*LOADER*/", "snapshot-loader.js"), ("/*STYLE*/", "style.css"), ("/*APP*/", "app.js"), ("<!--CAT-->", "cat-orbit.svg")):
     template = template.replace(token, (root / "web" / filename).read_text())
 art = base64.b64encode((root / "web/ornaments.svg").read_bytes()).decode("ascii")
 template = template.replace("__PRINT_TILE__", "data:image/svg+xml;base64," + art)

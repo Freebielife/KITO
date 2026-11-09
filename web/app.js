@@ -151,6 +151,7 @@ const texts = {
 let feedKind="all";
 const $=id=>document.getElementById(id);
 let snapshot=JSON.parse($("snapshot").textContent), lang="ru", period=1, ranking="holders", sellerDays=1, expanded=false;
+let syncState={phase:"idle",checkedAt:0};
 try{lang=localStorage.getItem("kito-lang")==="en"?"en":"ru"}catch{}
 const t=key=>texts[lang][key], day=86400, ranges=[3600,day,7*day,30*day,182*day,365*day];
 function el(tag,txt,cls){const e=document.createElement(tag);if(txt!==undefined)e.textContent=txt;if(cls)e.className=cls;return e}
@@ -337,13 +338,39 @@ function ranks(){
 }
 function render(){document.documentElement.lang=lang;document.querySelectorAll("[data-t]").forEach(n=>n.textContent=t(n.dataset.t));for(const l of ["ru","en"]){$(l).classList.toggle("on",l===lang);$(l).setAttribute("aria-pressed",l===lang);$(l).onclick=()=>{lang=l;try{localStorage.setItem("kito-lang",l)}catch{}render()}}
  $("walletLegend").textContent=wl("key");
- select("periods",t("periodNames"),period,i=>{period=i;render()});$("copy").textContent=t("copy");$("contract").href="https://gram.org/jetton/"+MASTER;$("contractAddress").textContent=MASTER;chart();stats();list();ranks()}
+ select("periods",t("periodNames"),period,i=>{period=i;render()});$("copy").textContent=t("copy");$("contract").href="https://gram.org/jetton/"+MASTER;$("contractAddress").textContent=MASTER;chart();stats();list();ranks();renderSyncStatus()}
 $("copy").onclick=async()=>{try{await navigator.clipboard.writeText(MASTER);$("copy").textContent=t("copied")}catch{window.prompt(t("copy"),MASTER)}};
 $("feedDomains").onchange=()=>{expanded=false;list()};
 $("more").onclick=()=>{expanded=!expanded;list()};window.addEventListener("resize",chart);render();
-const sources=["https://raw.githubusercontent.com/Freebielife/KITO/main/data/snapshot.json","https://freebielife.github.io/KITO/data/snapshot.json"];
-async function refresh(){for(const url of sources){try{const res=await fetch(url+"?v="+Math.floor(Date.now()/600000),{signal:AbortSignal.timeout(7000)});if(!res.ok)continue;const s=await res.json();if(s.schema!==1||!Number.isFinite(s.updated)||(snapshot.domains&&!s.domains))continue;if(s.updated>=(snapshot.updated||0)){snapshot=s;render();return}}catch{}}}
-refresh();setInterval(refresh,600000);window.addEventListener("online",refresh);document.addEventListener("visibilitychange",()=>{if(!document.hidden)refresh()});
+function renderSyncStatus(){
+ const ru=lang==='ru', now=Date.now()/1000;
+ const times=['trades','burns','holders'].map(k=>snapshot[k]?.asOf||0);
+ const asOf=Math.min(...times), minutes=Math.max(0,Math.floor((now-asOf)/60));
+ let age=minutes<1?(ru?'только что':'just now'):minutes<60?(ru?`${minutes} мин. назад`:`${minutes} min ago`):(ru?`${Math.floor(minutes/60)} ч ${minutes%60} мин. назад`:`${Math.floor(minutes/60)}h ${minutes%60}m ago`);
+ const fresh=asOf?(ru?'Данные обновлены '+age:'Data updated '+age):(ru?'Нет полного снимка данных':'Complete snapshot unavailable');
+ const loading=syncState.phase==='loading', failed=syncState.phase==='error';
+ $('syncStatus').textContent=loading?(ru?'Проверяем обновления…':'Checking for updates…'):failed?(ru?'Не удалось загрузить свежие данные':'Could not load fresh data'):fresh;
+ const warning=!asOf || minutes>=90 || (snapshot.errors||[]).length>0;
+ $('syncStatus').className=failed||warning?'syncWarning':'';
+ let detail=loading||failed?fresh:warning?(ru?'Часть данных устарела. Ожидаем новый снимок.':'Some data is old. Waiting for a new snapshot.'):(ru?'Автопроверка каждые 5 минут':'Checks every 5 minutes');
+ if(failed) detail+=' · '+(ru?'Показана сохранённая копия. Повторим проверку автоматически.':'Showing the saved copy. We will retry automatically.');
+ if(syncState.checkedAt&&!loading&&!failed) detail+=' · '+(ru?'Проверено в ':'Checked at ')+new Date(syncState.checkedAt).toLocaleTimeString(lang,{hour:'2-digit',minute:'2-digit'});
+ $('syncDetail').textContent=detail;
+ $('syncStatus').title=asOf?stamp(asOf):'';
+ $('refreshData').textContent=loading?(ru?'Загрузка…':'Loading…'):(ru?'Обновить':'Refresh');
+ $('refreshData').disabled=loading;
+}
+const refresh=createSnapshotLoader({
+ getSnapshot:()=>snapshot,
+ applySnapshot:next=>{snapshot=next;render()},
+ onState:state=>{syncState={...syncState,...state};renderSyncStatus()}
+});
+$('refreshData').onclick=()=>refresh();
+refresh();
+setInterval(()=>{if(!document.hidden)refresh()},300000);
+setInterval(renderSyncStatus,60000);
+window.addEventListener('online',refresh);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh()});
 
 const jumps=Array.from(document.querySelectorAll("#nav a"));
 function activeSection(){

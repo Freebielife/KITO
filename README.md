@@ -2,7 +2,9 @@
 
 Аналитика KITO на DeDust для **freebie.socool.ton**, на русском и английском. [Скачать index.html](https://raw.githubusercontent.com/Freebielife/KITO/main/index.html) и загрузить как корневой файл сайта в Resistance Tools.
 
-GitHub Actions обновляет данные каждые два часа. Страница читает свежий снимок с GitHub, а при отсутствии сети использует встроенную копию.
+Расписание GitHub Actions — каждые 30 минут (возможны задержки GitHub). Внешний планировщик подготовлен, но требует подключения: [настройка cron-job.org](docs/scheduler.md).
+
+Открытая страница проверяет снимок каждые 5 минут и по кнопке «Обновить». При сбое повторяет запрос и использует резервный GitHub API; старые данные сохраняются с видимым предупреждением. Все стили, рисунки и скрипты встроены в HTML. Сеть нужна для новых данных. После изменения интерфейса загрузите новый `index.html` в Resistance Tools один раз.
 
 Исходники интерфейса находятся в `web/`. Сборка и проверка (Python 3.10+):
 
@@ -10,4 +12,5 @@ GitHub Actions обновляет данные каждые два часа. С�
 python3 collect.py
 python3 build.py
 python3 verify.py
+node --test tests/snapshot-loader.test.cjs
 ```

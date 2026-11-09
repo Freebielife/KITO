@@ -215,3 +215,8 @@ footer{background:#090c10;border-top:1px solid #405362;padding:14px 18px;margin-
 
 /* Draw external-link arrows without relying on a font glyph. */
 .resourceList>a::after,.introLinks a[href^="https:"]::after,.row a:not(.walletAddress)::after{content:"";display:inline-block;width:8px;height:8px;flex-shrink:0;margin-left:6px;border-top:1.5px solid currentColor;border-right:1.5px solid currentColor;background:linear-gradient(135deg,transparent 43%,currentColor 46%,currentColor 54%,transparent 57%);vertical-align:1px}
+
+.syncBar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:0 0 12px;padding:12px 18px;background:#101b27;border:1px solid #374b5b;border-radius:12px;color:#e5f1fb}
+.syncBar>div{min-width:0}.syncBar p{font-size:14px;font-weight:650}.syncBar small{display:block;color:#b9c8d5;font-size:12px;overflow-wrap:anywhere}.syncBar .syncWarning{color:#ffcf80}
+#refreshData{flex-shrink:0;min-height:42px;padding:8px 14px;border:1px solid #6289a3;border-radius:7px;background:#15496b;color:#f3f8ff;font-weight:650;font-size:14px}#refreshData:hover{background:#1b5c82}#refreshData:disabled{opacity:.65;cursor:wait}
+@media(max-width:400px){.syncBar{align-items:flex-start;flex-wrap:wrap;padding:12px 14px}.syncBar>div{flex:1 1 175px}}
