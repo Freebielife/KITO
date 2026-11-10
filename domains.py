@@ -1,7 +1,7 @@
 """Ownership of canonical four-digit TON DNS NFTs and Resistance Tools socool subdomains."""
 import re
 import time
-from collections import defaultdict
+from collections import defaultdict, deque
 from urllib.parse import urlencode
 
 from assets import fetch, RAW_ADDRESS
@@ -50,12 +50,35 @@ def four_digits(wallet):
     return sorted(result)
 
 
+def check_queue(addresses, visible, checked, now):
+    """Refresh visible identities hourly while reserving every third slot for history."""
+    priority, history = [], []
+    for wallet in addresses:
+        record = checked[wallet]
+        ttl = 3600 if wallet in visible else 86400
+        if record.get("digitsAt", 0) and now - record["digitsAt"] < ttl:
+            continue
+        # Failed requests must rotate too, without exhausting the free API budget.
+        if record.get("lastAttempt", 0) and now - record["lastAttempt"] < 1800:
+            continue
+        (priority if wallet in visible else history).append(wallet)
+    age = lambda w: max(checked[w].get("digitsAt", 0), checked[w].get("lastAttempt", 0))
+    priority, history = deque(sorted(priority, key=age)), deque(sorted(history, key=age))
+    result = []
+    while (priority or history) and len(result) < 45:
+        for queue in (priority, priority, history):
+            if queue and len(result) < 45:
+                result.append(queue.popleft())
+    return result
+
+
 def enrich(snapshot, now):
     previous = snapshot.get("domains", {})
     holders = [r["wallet"] for r in snapshot.get("holders", {}).get("holders", [])]
     trades = [r["wallet"] for r in snapshot.get("trades", {}).get("rows", [])]
     burns = [r["wallet"] for r in snapshot.get("burns", {}).get("rows", [])]
     addresses = list(dict.fromkeys(holders + trades[:50] + burns + trades))
+    visible = set(holders + trades[:50] + burns[:50])
     wanted = set(addresses)
     checked = {w:dict(r) for w,r in previous.get("byWallet", {}).items() if w in wanted}
     # The whole socool collection is small. Replacing its complete owner map also handles transfers.
@@ -70,11 +93,9 @@ def enrich(snapshot, now):
             record.update(sub=sorted(subs.get(w, ())), subAt=now)
         elif now-record.get("subAt",0)>86400:
             record["sub"] = []
-    # Prioritise visible wallets; rotate through the rest across scheduled refreshes.
-    due = [w for w in addresses if now-checked[w].get("digitsAt",0) >= 86400]
-    due.sort(key=lambda w: max(checked[w].get("digitsAt",0), checked[w].get("lastAttempt",0)))
+    due = check_queue(addresses, visible, checked, now)
     end = time.monotonic()+120
-    for w in due[:45]:
+    for w in due:
         if time.monotonic() >= end: break
         checked[w]["lastAttempt"] = now
         try:
