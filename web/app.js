@@ -4,7 +4,7 @@ const texts = {
   "ru": {
     "intro": "Цена, сделки и держатели KITO в сети TON.",
     "swap": "Обмен на DeDust",
-    "price": "Курс последней сделки",
+    "price": "Капитализация KITO",
     "summary": "KITO за 24 часа",
     "activity": "Операции",
     "wallets": "Рейтинги",
@@ -30,7 +30,7 @@ const texts = {
     "balance": "Баланс KITO",
     "all": "Показать все",
     "delayed": "Обновление задерживается",
-    "chart": "История цены",
+    "chart": "Оценка капитализации в TON",
     "burnCount": "Сжигания",
     "projectDirectory": "Все ресурсы KITO",
     "navMarket": "Рынок",
@@ -38,7 +38,11 @@ const texts = {
     "exploreContract": "Контракт на gram.org",
     "toMarket": "К графику ↓",
     "up": "Наверх ↑",
-    "chartKey": "KITO за 1 GRAM",
+    "chartKey": "Оценка · TON",
+    "capMethod": "Цена сделки × текущее общее предложение KITO. История оценочная; заблокированные токены не исключены.",
+    "capPartial": "Изменение по доступной истории",
+    "capNoTrades": "Новых сделок за период нет · последний известный уровень",
+    "capLow": "Минимум", "capHigh": "Максимум",
     "burnKey": "🔥 Сжигание",
     "pointHint": "Коснись графика или выбери точку стрелками ← →.",
     "activityHint": "Покупки и продажи из пула DeDust и сжигания токена.",
@@ -60,7 +64,7 @@ const texts = {
     "feedTime": "Сделки",
     "periodNames": [
       "1 час",
-      "День",
+      "24 часа",
       "Неделя",
       "Месяц",
       "6 мес.",
@@ -77,7 +81,7 @@ const texts = {
   "en": {
     "intro": "Price, trades and KITO holders on TON.",
     "swap": "Swap on DeDust",
-    "price": "Latest exchange rate",
+    "price": "KITO market cap",
     "summary": "KITO in 24 hours",
     "activity": "Activity",
     "wallets": "Rankings",
@@ -103,7 +107,7 @@ const texts = {
     "balance": "KITO balance",
     "all": "Show all",
     "delayed": "Update overdue",
-    "chart": "Price history",
+    "chart": "Estimated market cap in TON",
     "burnCount": "Burns",
     "projectDirectory": "KITO link directory",
     "navMarket": "Market",
@@ -111,7 +115,11 @@ const texts = {
     "exploreContract": "Contract on gram.org",
     "toMarket": "View chart ↓",
     "up": "Back to top ↑",
-    "chartKey": "KITO per 1 GRAM",
+    "chartKey": "Estimate · TON",
+    "capMethod": "Trade price × current total KITO supply. Historical values are estimates; locked tokens are included.",
+    "capPartial": "Change over available history",
+    "capNoTrades": "No new trades in this period · last known level",
+    "capLow": "Low", "capHigh": "High",
     "burnKey": "🔥 Burn",
     "pointHint": "Tap the chart or use the ← → arrow keys to inspect a trade.",
     "activityHint": "Buys and sells from the DeDust pool and confirmed token burns.",
@@ -133,7 +141,7 @@ const texts = {
     "feedTime": "Trades",
     "periodNames": [
       "1 hour",
-      "Day",
+      "24 hours",
       "Week",
       "Month",
       "6 mo.",
@@ -228,69 +236,80 @@ function tx(row){const a=link("https://gram.org/tx/"+row.tx,t("openTx"));a.title
 function select(id,labels,selected,onClick){const node=$(id);node.replaceChildren();labels.forEach((name,i)=>{const b=el("button",name);b.classList.toggle("on",i===selected);b.setAttribute("aria-pressed",i===selected);b.onclick=()=>onClick(i);node.append(b)})}
 function freshness(s){if(!s?.asOf)return t("no");return t("updated")+" "+stamp(s.asOf)+(Date.now()/1000-s.asOf>4*3600?" · "+t("delayed"):"")}
 function coverage(section,cut){return section&&section.since>cut?t("partial")+" · "+t("since")+" "+stamp(section.since):""}
-function bucketPrice(r){return Number(r.kito)/Number(r.ton)}
-function quoteRate(r){return "1 GRAM = "+format(bucketPrice(r),2)+" KITO"}
-function svg(tag,attrs){const n=document.createElementNS("http://www.w3.org/2000/svg",tag);for(const [k,v] of Object.entries(attrs))n.setAttribute(k,v);return n}
+function capFormat(n,compact=false){
+ return Number(n).toLocaleString(lang,{maximumFractionDigits:compact?1:0,...(compact?{notation:'compact'}:{})});
+}
+function svg(tag,attrs){const n=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const [k,v] of Object.entries(attrs))n.setAttribute(k,v);return n}
 function chart(){
- const section=snapshot.trades, rows=section?.rows||[], end=section?.asOf||snapshot.updated||Date.now()/1000, start=end-ranges[period];
- $("lastPrice").textContent=rows.length?quoteRate(rows[0]):"—";
- const plot=$("plot");plot.replaceChildren();const box=svg("svg",{viewBox:"0 0 900 185",preserveAspectRatio:"none",role:"group","aria-label":t("chart")});
- const width=Math.max(240,plot.clientWidth||800);box.setAttribute("viewBox","0 0 "+width+" 185");const w=width-14;
- const series=new Map();
- for(const r of [...rows].reverse())if(r.time>=start&&r.time<=end)series.set(Math.floor((r.time-start)/ranges[period]*180),r);
- const prices=[...series.values()], vals=prices.map(bucketPrice);
- const burns=(snapshot.burns?.rows||[]).filter(r=>r.time>=start&&r.time<=end);
- const left=7, right=w-69, x=time=>left+(time-start)/ranges[period]*(right-left);
- const info=$("readout");
- info.textContent=prices.length?t("pointHint"):"";
- if(vals.length){
-   const low=Math.min(...vals), high=Math.max(...vals);
-   const pad=(high-low)*.10 || Math.max(low*.015,1e-12), min=low-pad, max=high+pad;
-   const y=val=>138-(val-min)/(max-min)*114;
-   for(const p of [max,(max+min)/2,min]){
-     const height=y(p);
-     box.append(svg("path",{d:"M"+left+" "+height+"H"+right,stroke:"#354453","stroke-dasharray":"3 5"}));
-     const label=svg("text",{x:right+5,y:height+4});
-     label.textContent=format(p,2);box.append(label);
+ const section=snapshot.trades, model=marketCapSeries(snapshot,ranges[period]), {start,end,points}=model;
+ $('lastPrice').textContent=model.latestCap!==null?capFormat(model.latestCap)+' TON':'—';
+ const change=$('capChange');change.textContent=model.change===null?'':(model.change>=0?'+':'')+format(model.change,2)+'%';
+ change.className='capChange '+(model.change===null?'':model.change>=0?'capPositive':'capNegative');
+ $('capPeriod').textContent=model.partial?t('capPartial'):t('periodNames')[period];
+ $('capLow').textContent=model.low===undefined?'':t('capLow')+' · '+capFormat(model.low)+' TON';
+ $('capHigh').textContent=model.high===undefined?'':t('capHigh')+' · '+capFormat(model.high)+' TON';
+ const plot=$('plot');plot.replaceChildren();
+ const width=Math.max(240,plot.clientWidth||800),left=8,right=width-76,top=20,bottom=184;
+ const box=svg('svg',{viewBox:`0 0 ${width} 238`,preserveAspectRatio:'none',role:'group','aria-label':t('chart')});
+ const x=time=>left+(time-start)/ranges[period]*(right-left);
+ const info=$('readout');info.replaceChildren();
+ const colour=model.change===null||model.change>=0?'#38dda0':'#ff2020';
+ $('market').style.setProperty('--chart-colour',colour);
+ if(points.length){
+   const pad=(model.high-model.low)*.12||Math.max(model.low*.015,1e-12);
+   const min=Math.max(0,model.low-pad),max=model.high+pad;
+   const y=value=>bottom-(value-min)/(max-min)*(bottom-top);
+   for(let i=0;i<4;i++){
+     const value=max-(max-min)*i/3, height=y(value);
+     box.append(svg('path',{d:`M${left} ${height}H${right}`,stroke:'#344b5b','stroke-dasharray':'2 6'}));
+     const label=svg('text',{x:right+9,y:height+4});label.textContent=capFormat(value,true);box.append(label);
    }
-   const pts=prices.map(r=>[x(r.time),y(bucketPrice(r))]);
-   if(pts.length>1){
-     box.append(svg("polygon",{points:[...pts,[pts.at(-1)[0],141],[pts[0][0],141]].join(" "),fill:"#153d58"}));
-     box.append(svg("polyline",{points:pts.join(" "),fill:"none",stroke:"#30a1f5","stroke-width":2.5,"stroke-linejoin":"round"}));
-   }
-   const last=pts.at(-1);
-   box.append(svg("circle",{cx:last[0],cy:last[1],r:4,fill:"#30a1f5",stroke:"#fff","stroke-width":1.5}));
-   const cursor=svg("circle",{r:5,fill:"#10151c",stroke:"#8fd4ff","stroke-width":3,visibility:"hidden"});
-   box.append(cursor);
-   let active=pts.length-1;
+   const defs=svg('defs',{}),gradient=svg('linearGradient',{id:'capFill',x1:0,y1:0,x2:0,y2:1});
+   gradient.append(svg('stop',{offset:'0%', 'stop-color':colour,'stop-opacity':'.26'}),svg('stop',{offset:'100%','stop-color':colour,'stop-opacity':'.015'}));defs.append(gradient);box.append(defs);
+   const coords=points.map(p=>[x(p.time),y(p.cap)]),last=coords.at(-1),first=coords[0];
+   box.append(svg('path',{d:`M${left} ${first[1]}H${right}`,stroke:'#7290a2','stroke-opacity':'.45','stroke-dasharray':'5 6'}));
+   const line=coords.map((p,i)=>(i?'L':'M')+p.join(' ')).join(' ');
+   box.append(svg('path',{d:line+`L${right} ${last[1]}L${right} ${bottom+2}L${first[0]} ${bottom+2}Z`,fill:'url(#capFill)'}));
+   if(coords.length>1)box.append(svg('path',{d:line,fill:'none',stroke:colour,'stroke-width':2.7,'stroke-linejoin':'round','stroke-linecap':'round'}));
+   if(last[0]<right)box.append(svg('path',{d:`M${last[0]} ${last[1]}H${right}`,stroke:colour,'stroke-width':1.5,'stroke-dasharray':'4 5',opacity:'.7'}));
+   box.append(svg('circle',{cx:last[0],cy:last[1],r:4,fill:colour,stroke:'#e6fff5','stroke-width':1.5}));
+   const cursorLine=svg('path',{stroke:'#c0d6e1','stroke-dasharray':'3 4',visibility:'hidden'});
+   const cursor=svg('circle',{r:5,fill:'#10151c',stroke:colour,'stroke-width':3,visibility:'hidden'});box.append(cursorLine,cursor);
+   let active=points.length-1;
    function inspect(i){
-     active=i;cursor.setAttribute("cx",pts[i][0]);cursor.setAttribute("cy",pts[i][1]);cursor.setAttribute("visibility","visible");
-     const r=prices[i];info.replaceChildren(document.createTextNode(stamp(r.time)+" · "+quoteRate(r)+" · "),tx(r));
+     active=i;const p=points[i],pos=coords[i];
+     cursor.setAttribute('cx',pos[0]);cursor.setAttribute('cy',pos[1]);cursor.setAttribute('visibility','visible');
+     cursorLine.setAttribute('d',`M${pos[0]} ${top}V${bottom}`);cursorLine.setAttribute('visibility','visible');
+     info.replaceChildren(document.createTextNode(stamp(p.row.time)+' · '+capFormat(p.cap)+' TON · '),tx(p.row));
    }
-   box.setAttribute("tabindex","0");
-   box.addEventListener("pointerdown",e=>{
-     if(e.target.closest(".marker"))return;
-     const at=(e.clientX-box.getBoundingClientRect().left)*width/box.getBoundingClientRect().width;
-     inspect(pts.reduce((best,p,i)=>Math.abs(p[0]-at)<Math.abs(pts[best][0]-at)?i:best,0));
+   inspect(active);
+   box.setAttribute('tabindex','0');box.setAttribute('aria-description',t('pointHint'));
+   function pointer(e){
+     if(e.target.closest('.marker'))return;
+     const rect=box.getBoundingClientRect(),at=(e.clientX-rect.left)*width/rect.width;
+     inspect(coords.reduce((best,p,i)=>Math.abs(p[0]-at)<Math.abs(coords[best][0]-at)?i:best,0));
+   }
+   box.addEventListener('pointerdown',pointer);
+   box.addEventListener('pointermove',e=>{if(e.pointerType==='mouse'||e.buttons)pointer(e)});
+   box.addEventListener('keydown',e=>{
+     if(e.target!==box||!['ArrowLeft','ArrowRight'].includes(e.key))return;
+     e.preventDefault();inspect(Math.max(0,Math.min(active+(e.key==='ArrowLeft'?-1:1),points.length-1)));
    });
-   box.addEventListener("keydown",e=>{
-     if(e.target!==box||!["ArrowLeft","ArrowRight"].includes(e.key))return;
-     e.preventDefault();inspect(Math.max(0,Math.min(active+(e.key==="ArrowLeft"?-1:1),pts.length-1)));
-   });
- }else{const label=svg("text",{x:8,y:80});label.textContent=t("noTrades");box.append(label)}
- for(const r of burns){
-   const g=svg("a",{href:"https://gram.org/tx/"+r.tx,class:"marker","aria-label":t("burn")+" "+format(r.kito)+" KITO"});
+ }else{const label=svg('text',{x:left,y:100});label.textContent=t('no');box.append(label)}
+ for(const r of (snapshot.burns?.rows||[]).filter(r=>r.time>=start&&r.time<=end)){
+   const g=svg('a',{href:'https://gram.org/tx/'+r.tx,class:'marker','aria-label':t('burn')+' '+format(r.kito)+' KITO'});
    const cx=Math.max(12,Math.min(right,x(r.time)));
-   g.append(svg("rect",{x:cx-11,y:139,width:25,height:25,rx:6,fill:"#ffedd9"}));
-   const icon=svg("text",{x:cx-7,y:157,style:"font-size:15px"});icon.textContent="🔥";g.append(icon);
-   const show=()=>info.replaceChildren(document.createTextNode(stamp(r.time)+" · "+t("burn")+" "+format(r.kito)+" KITO · "),tx(r));
-   g.addEventListener("click",e=>{e.preventDefault();show()});g.addEventListener("focus",show);box.append(g);
+   g.append(svg('rect',{x:cx-11,y:191,width:25,height:25,rx:6,fill:'#ffedd9'}));
+   const icon=svg('text',{x:cx-7,y:209,style:'font-size:15px'});icon.textContent='🔥';g.append(icon);
+   const show=()=>info.replaceChildren(document.createTextNode(stamp(r.time)+' · '+t('burn')+' '+format(r.kito)+' KITO · '),tx(r));
+   g.addEventListener('click',e=>{e.preventDefault();show()});g.addEventListener('focus',show);box.append(g);
  }
- for(const [pos,time,anchor] of [[left,start,"start"],[width-3,end,"end"]]){
-   const label=svg("text",{x:pos,y:181,"text-anchor":anchor});label.textContent=stamp(time);box.append(label)
+ const axisTime=seconds=>new Date(seconds*1000).toLocaleString(lang,period===0?{hour:'2-digit',minute:'2-digit'}:period===1?{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}:{day:'numeric',month:'short',year:'2-digit'});
+ for(const [pos,time,anchor] of [[left,start,'start'],[width-3,end,'end']]){
+   const label=svg('text',{x:pos,y:234,'text-anchor':anchor});label.textContent=axisTime(time);box.append(label);
  }
  plot.append(box);
- $("chartInfo").textContent=[freshness(section),coverage(section,start)].filter(Boolean).join(" · ");
+ $('chartInfo').textContent=[freshness(section),coverage(section,start),!model.tradeCount&&points.length?t('capNoTrades'):'',snapshot.holders?.asOf<section?.asOf?(lang==='ru'?'Предложение на ':'Supply as of ')+stamp(snapshot.holders.asOf):''].filter(Boolean).join(' · ');
 }
 function stats(){
  const trades=snapshot.trades,burns=snapshot.burns;

@@ -21,8 +21,8 @@ jobs:
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
-      - name: Verify snapshot loader
-        run: node --test tests/snapshot-loader.test.cjs
+      - name: Verify snapshot loader and market cap
+        run: node --test tests/*.test.cjs
       - name: Verify domain ownership and refresh queue
         run: python3 -m unittest discover -s tests -p 'test_*.py'
       - name: Collect market activity

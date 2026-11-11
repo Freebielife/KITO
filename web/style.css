@@ -220,3 +220,18 @@ footer{background:#090c10;border-top:1px solid #405362;padding:14px 18px;margin-
 .syncBar>div{min-width:0}.syncBar p{font-size:14px;font-weight:650}.syncBar small{display:block;color:#b9c8d5;font-size:12px;overflow-wrap:anywhere}.syncBar .syncWarning{color:#ffcf80}
 #refreshData{flex-shrink:0;min-height:42px;padding:8px 14px;border:1px solid #6289a3;border-radius:7px;background:#15496b;color:#f3f8ff;font-weight:650;font-size:14px}#refreshData:hover{background:#1b5c82}#refreshData:disabled{opacity:.65;cursor:wait}
 @media(max-width:400px){.syncBar{align-items:flex-start;flex-wrap:wrap;padding:12px 14px}.syncBar>div{flex:1 1 175px}}
+
+/* Market cap: native-currency valuation, with an explicit estimation note. */
+.graph .price{font-size:clamp(32px,4.2vw,52px);letter-spacing:-.055em;line-height:1.15}
+.graph h2{font-size:15px;margin-top:12px;margin-bottom:7px}
+.capHeadline{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.capChange{font:700 14px/1.3 system-ui,sans-serif;padding:6px 9px;border-radius:8px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.capChange:empty{display:none}.capPositive{color:#54edb6;background:#133c32;border:1px solid #24634e}.capNegative{color:#ff2020;background:#321419;border:1px solid #7a242a}
+#capPeriod{margin-top:5px;color:#a4b9cb}.graph #plot{min-height:250px;margin:18px 0 8px}.graph #plot svg{height:250px}
+.graph #plot text{font:11px system-ui,sans-serif;fill:#b8c9d6}
+.capRange{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;color:#adc3d3;font-size:12px;font-variant-numeric:tabular-nums;margin:0 0 13px}
+.graph #readout{background:#0b1723;border:1px solid #2b4354;padding:10px 12px;border-radius:9px;min-height:43px;font-size:13px;margin-bottom:9px}
+.capMethod{font-size:11px;line-height:1.5;color:#9db3c4;border-top:1px solid #2b4354;padding-top:10px;margin-top:10px;max-width:850px}
+.graph .chartCaption .lineKey{background:var(--chart-colour,#38dda0)}
+@media(max-width:500px){.graph .price{font-size:34px}.capHeadline{gap:8px}.graph .graphTop{gap:15px}.graph .tabs{width:100%;justify-content:space-between}.graph .tabs button{padding:8px 6px;font-size:12px}.graph #plot svg{height:240px}.graph #plot{min-height:240px}.graph #readout{font-size:12px}.capMethod{font-size:11px}}
+@media(max-width:360px){.graph .tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px}.graph .tabs button{width:100%}}
