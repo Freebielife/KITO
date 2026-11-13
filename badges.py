@@ -4,7 +4,6 @@ import binascii
 import re
 import time
 from collections import defaultdict
-from concurrent.futures import ThreadPoolExecutor
 from urllib.parse import urlencode
 
 from assets import fetch, raw_address
@@ -140,9 +139,10 @@ def discover(previous):
 def stake(previous):
     addresses, cursor = discover(previous)
     totals = defaultdict(int)
-    with ThreadPoolExecutor(max_workers=3) as workers:
-        for owner, total in workers.map(position, sorted(addresses)):
-            totals[owner] += total
+    for address in sorted(addresses):
+        time.sleep(1.1)
+        owner, total = position(address)
+        totals[owner] += total
     qualifying = {owner: True for owner, amount in totals.items() if amount >= 500_000 * 10**9}
     return {"wallets": qualifying, "positions": sorted(addresses), "cursor": str(cursor)}
 
