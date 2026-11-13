@@ -5,6 +5,7 @@ import time
 from pathlib import Path
 
 import assets
+import badges
 import domains
 import trades
 
@@ -57,6 +58,9 @@ def refresh():
         except Exception as error:
             errors.append("domains")
             print("domains FAILED:", error, file=sys.stderr, flush=True)
+        snapshot["badges"] = badges.refresh(snapshot.get("badges", {}), now)
+        if snapshot["badges"]["failed"]:
+            errors.append("badges")
         snapshot.update(schema=1, updated=now, errors=errors)
         DATA.parent.mkdir(exist_ok=True)
         save(DATA, snapshot)

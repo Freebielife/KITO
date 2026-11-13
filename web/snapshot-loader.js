@@ -9,6 +9,15 @@
       else if(key==='holders'){if(!Array.isArray(part.holders) || !Number.isFinite(Number(part.totalSupply)) || Number(part.totalSupply)<=0) return false;}
       else if(!Array.isArray(part.rows)) return false;
     }
+    if(s.badges){
+      if(!s.badges.sources || !Array.isArray(s.badges.failed)) return false;
+      for(const [key, source] of Object.entries(s.badges.sources)){
+        if(!source || !Number.isFinite(source.asOf) || source.asOf>s.updated+300 ||
+           source.asOf<(current.badges?.sources?.[key]?.asOf||0) ||
+           !source.wallets || typeof source.wallets!=="object" || Array.isArray(source.wallets)) return false;
+      }
+    }
+    if(Object.keys(current.badges?.sources||{}).some(key=>!s.badges?.sources?.[key])) return false;
     return true;
   }
   function createSnapshotLoader({getSnapshot,applySnapshot,onState,fetchImpl=globalThis.fetch,timeoutMs=20000,retryDelayMs=1500}){

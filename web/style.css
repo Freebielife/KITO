@@ -235,3 +235,45 @@ footer{background:#090c10;border-top:1px solid #405362;padding:14px 18px;margin-
 .graph .chartCaption .lineKey{background:var(--chart-colour,#38dda0)}
 @media(max-width:500px){.graph .price{font-size:34px}.capHeadline{gap:8px}.graph .graphTop{gap:15px}.graph .tabs{width:100%;justify-content:space-between}.graph .tabs button{padding:8px 6px;font-size:12px}.graph #plot svg{height:240px}.graph #plot{min-height:240px}.graph #readout{font-size:12px}.capMethod{font-size:11px}}
 @media(max-width:360px){.graph .tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px}.graph .tabs button{width:100%}}
+
+#activity,#wallets,#pools{background:#141b27;border-color:#303a4a}
+#activity .row,#wallets .row{background:transparent;border-color:#303a4a;border-left:0;padding-left:0}
+#activity .row .walletIdentity,#wallets .row .walletIdentity{background:none;padding:0;column-gap:6px;row-gap:4px}
+.columns .walletIdentity .walletAddress{background:none;padding:0}
+.columns .row .walletAddress{color:#d6e2f0}
+.columns .walletRole.buy,.columns .badge.buy{color:#85e6bc;background:none}
+.columns .walletRole.sell,.columns .badge.sell{color:#ff9a9f;background:none}
+.columns .walletRole.burn,.columns .badge.burn{color:#f1bd7d;background:none}
+.columns .domainDetails summary,.columns .domainDetails span{color:#becbd9!important}
+.columns .row .projectBadges{display:flex;flex-wrap:wrap;gap:5px;width:100%;align-items:center}
+.columns .row .projectBadge{--badge-edge:#53627b;display:inline-flex;align-items:center;gap:4px;padding:2px 6px;border:1px solid var(--badge-edge);border-radius:6px;background:#202939;text-decoration:none;color:#eaf1fb;font:650 11px/1.35 system-ui,sans-serif;min-height:26px;max-width:100%}
+.columns .row .projectBadge:hover{text-decoration:underline}
+.columns .row .projectBadge::after{display:none}
+.projectBadge img{display:block;width:18px;height:18px;object-fit:contain;border-radius:3px}
+.columns .row .projectBadge.staking{padding-inline:4px;--badge-edge:#6c93cb}
+.columns .row .projectBadge.vnuk{--badge-edge:#8f606f;color:#ffc8d4}
+.columns .row .projectBadge.author{border-color:transparent;background:linear-gradient(#202939,#202939) padding-box,linear-gradient(105deg,#508eff,#dce5ee,#508eff) border-box;background-size:100% 100%,200% 100%;animation:projectBadgeGlow 5s ease-in-out infinite alternate}
+.columns .row .projectBadge.joystick{--badge-edge:#9164ac}
+.columns .row .projectBadge.phoenix{--badge-edge:#a86a36}
+.projectBadge.joystick span,.projectBadge.phoenix span{background:linear-gradient(90deg,var(--badge-color),#ffe182,var(--badge-color));background-size:210% 100%;background-clip:text;color:transparent;animation:projectBadgeGlow 5s ease-in-out infinite alternate}
+.projectBadge.joystick{--badge-color:#e3a6ff}
+.projectBadge.phoenix{--badge-color:#ff9862}
+@keyframes projectBadgeGlow{to{background-position:100% 0}}
+@media(prefers-reduced-motion:reduce){.columns .row .projectBadge.author,.projectBadge.joystick span,.projectBadge.phoenix span{animation:none}}
+#pools [lang="en"],html[lang="en"] #pools [lang="ru"]{display:none}
+html[lang="en"] #pools [lang="en"]{display:inline}
+#pools .poolIntro{margin:8px 0 16px}
+#pools .poolGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+#pools .poolCard{min-width:0;background:#1c2636;border:1px solid #39475b;border-radius:10px;padding:12px}
+#pools .poolCard h3{margin:0 0 3px}
+#pools .poolCard p{margin:0}
+#pools .poolActions{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+#pools .poolActions a{display:inline-flex;align-items:center;min-height:38px;padding:5px 9px;color:#edf5ff;background:#22344c;border:1px solid #586d88;border-radius:7px;font-size:13px;font-weight:650;text-decoration:none}
+#pools .poolActions a:hover{background:#304963;text-decoration:underline}
+#pools .poolRoute,#pools .poolTiny{margin-top:16px;padding-top:13px;border-top:1px solid #39475b}
+#pools .poolRoute h3{margin:0 0 4px}
+#pools .poolRoute .poolCard{margin-top:9px;max-width:440px}
+#pools .poolTiny .poolGrid{margin-top:10px}
+#pools .poolSources{margin-top:13px;font-size:12px}
+@media(max-width:800px){#pools .poolGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:500px){#pools .poolGrid{grid-template-columns:minmax(0,1fr)}}
