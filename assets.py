@@ -16,10 +16,10 @@ BURN_NOTIFICATION = "0x7bdd97de"
 HOLDER_LIMIT = 20
 
 
-def fetch(path, attempts=3):
+def fetch(path, attempts=3, *, api=API):
     for attempt in range(attempts):
         try:
-            request = Request(API + path, headers={"Accept": "application/json", "User-Agent": "KITO-data/1.0"})
+            request = Request(api + path, headers={"Accept": "application/json", "User-Agent": "KITO-data/1.0"})
             with urlopen(request, timeout=20) as response:
                 return json.load(response)
         except (HTTPError, URLError, TimeoutError, ConnectionError) as error:
@@ -44,13 +44,15 @@ def token_amount(units):
     return (f"{whole}.{fraction:09d}").rstrip("0").rstrip(".")
 
 
-def resolved_domain(owner):
+def resolved_domain(owner, *, strict=False):
     name = (owner.get("name") or "").lower()
     if not DOMAIN.fullmatch(name):
         return None
     try:
         record = fetch("/dns/" + quote(name, safe="") + "/resolve", attempts=1)
-    except (HTTPError, URLError, TimeoutError, ConnectionError):
+    except (HTTPError, URLError, TimeoutError, ConnectionError) as error:
+        if strict and not (isinstance(error, HTTPError) and error.code == 404):
+            raise
         return None
     wallet = record.get("wallet") or {}
     return name if str(wallet.get("address")).lower() == raw_address(owner["address"]) else None

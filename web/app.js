@@ -2,6 +2,7 @@
 const MASTER="EQCSLLVQ8qdhEqZUKaiKU7F6sVfnNPmQ4FsCpCo8olo795LP";
 const texts = {
   "ru": {
+    "blueCollection":"Открыть NFT-коллекцию","activated":"Активация","burnBadge":"Сожжено от 1 000 токенов","toZero":"На нулевой адрес","operationDetails":"Подробности операции",
     "intro": "Цена, сделки и держатели KITO в сети TON.",
     "swap": "Обмен на DeDust",
     "price": "Капитализация KITO",
@@ -79,6 +80,7 @@ const texts = {
     "noneTagged": "Среди проверенных адресов для этого фильтра записей нет."
   },
   "en": {
+    "blueCollection":"Open NFT collection","activated":"Activated","burnBadge":"Burned at least 1,000 tokens","toZero":"Transfer to zero address","operationDetails":"Transaction details",
     "intro": "Price, trades and KITO holders on TON.",
     "swap": "Swap on DeDust",
     "price": "KITO market cap",
@@ -194,9 +196,13 @@ const walletLabels = {
       key:"The address colour identifies the wallet’s role in this transaction.",holderKey:"Address colours show the last observed pool trade. Grey means no trade was found in the archive."}
 };
 const wl=key=>walletLabels[lang][key];
+function linkedDomain(wallet){
+  const record=snapshot.identity?.byWallet?.[wallet];
+  return record?.checked>=Date.now()/1000-86400 ? record.domain : null;
+}
 function hasDomainBadge(wallet){
   const record=snapshot.domains?.byWallet?.[wallet];
-  return Boolean(record?.digits?.length||record?.sub?.length);
+  return Boolean(linkedDomain(wallet)||record?.digits?.length||record?.sub?.length);
 }
 
 const authorCollection="EQAhaFPX9zIBVYe_vfy3dudCkxJDjSoMjj59KndtHKcqo3iy";
@@ -205,14 +211,15 @@ const projectBadgeDefs=[
   ["author","author NFT",""],
   ["vnuk","VNUK","https://t.me/mRvnukICHlife"],
   ["joystick","Joystick","https://t.me/joystickpro"],
-  ["phoenix","Phoenix","https://t.me/PHXPW"]
+  ["phoenix","Phoenix","https://t.me/PHXPW"],
+  ["blueNft","","https://getgems.io/collection/EQBmoucipH0QT_qpd361W-9zUlyFsSl1FD1GIY0AfXdpPQW8"]
 ];
 function appendProjectBadges(wrapper,wallet){
   const data=snapshot.badges?.sources;
-  if(!data)return;
+  const identity=snapshot.identity?.byWallet?.[wallet];
   const badges=el("span",undefined,"projectBadges");
   function match(key){
-    const source=data[key];
+    const source=data?.[key];
     return source?.asOf>=Date.now()/1000-24*3600 && source.wallets?.[wallet];
   }
   for(const [key,label,url] of projectBadgeDefs){
@@ -228,22 +235,46 @@ function appendProjectBadges(wrapper,wallet){
       badge.append(icon);
     }
     if(label)badge.append(el("span",label));
+    if(key==="blueNft"){
+      badge.title=t("blueCollection");
+      badge.setAttribute("aria-label",badge.title);
+    }
     if(key==="staking"){
       badge.title=lang==="ru"?"JVault · от 500 000 LUDOMAN":"JVault · 500,000+ LUDOMAN";
       badge.setAttribute("aria-label",badge.title);
     }
     badges.append(badge);
   }
+  if(identity?.activated){
+    const date=new Date(identity.activated*1000);
+    const fifth=new Date(date);
+    fifth.setUTCFullYear(date.getUTCFullYear()+5);
+    if(fifth.getUTCMonth()!==date.getUTCMonth())fifth.setUTCDate(0);
+    if(Date.now()>fifth.getTime()){
+      const badge=el("span",undefined,"projectBadge og");
+      badge.append(el("span","OG"));
+      badge.title=t("activated")+" "+stamp(identity.activated);
+      badge.setAttribute("aria-label","OG · "+badge.title);
+      badges.append(badge);
+    }
+  }
+  if(burnTotals.get(wallet)>=1000n*10n**9n){
+    const badge=el("span","🔥","projectBadge burner");
+    badge.title=t("burnBadge");
+    badge.setAttribute("aria-label",badge.title);
+    badges.append(badge);
+  }
   if(badges.childElementCount)wrapper.append(badges);
 }
 
-function walletIdentity(raw,name,kind,latest=false){
+function walletIdentity(raw,name,kind,{activity=false, holder=false}={}){
   const wrapper=el("span",undefined,"walletIdentity");
-  const address=addr(raw,name);
+  const identity=snapshot.identity?.byWallet?.[raw];
+  const domain=linkedDomain(raw);
+  const address=addr(raw,(holder&&identity?.role)||domain||name);
   address.className="walletAddress "+(kind||"neutral");
-  if(kind){
-    const key=latest?(kind==="buy"?"activeBuy":"activeSell"):kind;
-    wrapper.append(el("span",wl(key),"walletRole "+kind));
+  if(!activity&&holder&&kind){
+    wrapper.append(el("span",wl(kind==="buy"?"activeBuy":"activeSell"),"walletRole "+kind));
   }
   wrapper.append(address);
   const record=snapshot.domains?.byWallet?.[raw];
@@ -252,6 +283,7 @@ function walletIdentity(raw,name,kind,latest=false){
     if(!names.length)continue;
     wrapper.classList.add(type==="digits"?"hasDigits":"hasSub");
     const badge=el("span",names[0],"domainBadge "+type);
+    if(address.textContent===names[0]) badge.hidden=true;
     badge.title=wl(type)+" · "+wl("checked")+" · "+stamp(type==="digits"?record.digitsAt:record.subAt);
     wrapper.append(badge);
     if(names.length>1){
@@ -263,6 +295,21 @@ function walletIdentity(raw,name,kind,latest=false){
   }
   appendProjectBadges(wrapper,raw);
   return wrapper;
+}
+function burnRows(){
+  const rows=new Map();
+  for(const r of [...(snapshot.zeroBurns?.rows||[]),...(snapshot.burns?.rows||[])])rows.set(r.tx,r);
+  return [...rows.values()];
+}
+let burnTotals;
+function updateBurnTotals(){
+  burnTotals=new Map();
+  for(const r of burnRows()){
+    const [whole,fraction=""]=String(r.kito).split(".");
+    if(!/^\d+$/.test(whole)||!/^\d{0,9}$/.test(fraction))continue;
+    const units=BigInt(whole)*10n**9n+BigInt(fraction.padEnd(9,"0"));
+    burnTotals.set(r.wallet,(burnTotals.get(r.wallet)||0n)+units);
+  }
 }
 function lastTradeByWallet(){
   const latest=new Map();
@@ -335,7 +382,7 @@ function chart(){
      e.preventDefault();inspect(Math.max(0,Math.min(active+(e.key==='ArrowLeft'?-1:1),points.length-1)));
    });
  }else{const label=svg('text',{x:left,y:100});label.textContent=t('no');box.append(label)}
- for(const r of (snapshot.burns?.rows||[]).filter(r=>r.time>=start&&r.time<=end)){
+ for(const r of burnRows().filter(r=>r.time>=start&&r.time<=end)){
    const g=svg('a',{href:'https://gram.org/tx/'+r.tx,class:'marker','aria-label':t('burn')+' '+format(r.kito)+' KITO'});
    const cx=Math.max(12,Math.min(right,x(r.time)));
    g.append(svg('rect',{x:cx-11,y:191,width:25,height:25,rx:6,fill:'#ffedd9'}));
@@ -351,7 +398,7 @@ function chart(){
  $('chartInfo').textContent=[freshness(section),coverage(section,start),!model.tradeCount&&points.length?t('capNoTrades'):'',snapshot.holders?.asOf<section?.asOf?(lang==='ru'?'Предложение на ':'Supply as of ')+stamp(snapshot.holders.asOf):''].filter(Boolean).join(' · ');
 }
 function stats(){
- const trades=snapshot.trades,burns=snapshot.burns;
+ const trades=snapshot.trades,burns=snapshot.burns&&snapshot.zeroBurns?{...snapshot.burns,asOf:Math.min(snapshot.burns.asOf,snapshot.zeroBurns.asOf),rows:burnRows()}:snapshot.burns;
  const within=s=>(s?.rows||[]).filter(r=>r.time>s.asOf-day&&r.time<=s.asOf);
  const rows=within(trades), buys=rows.filter(r=>r.kind==="buy"), sells=rows.filter(r=>r.kind==="sell");
  const sum=(items,key)=>items.reduce((v,r)=>v+Number(r[key]),0);
@@ -370,16 +417,36 @@ function row(first,sub,value,last){const a=el("div"),b=el("div"),d=el("div",unde
 function list(){
  const kinds=["all","buy","sell","burn"];
  select("filters",[t("filterAll"),t("buys"),t("sells"),t("burnCount")],kinds.indexOf(feedKind),i=>{feedKind=kinds[i];expanded=false;list()});
- const combined=[...(snapshot.trades?.rows||[]),...(snapshot.burns?.rows||[])]
+ const combined=[...(snapshot.trades?.rows||[]),...burnRows()]
    .filter(r=>(feedKind==="all"||r.kind===feedKind)&&(!$("feedDomains").checked||hasDomainBadge(r.wallet))).sort((a,b)=>b.time-a.time||a.tx.localeCompare(b.tx)).slice(0,50);
- const clock=feedKind==="burn"?snapshot.burns:snapshot.trades;
- $("feedNote").textContent=(feedKind==="all"?t("feedTime")+" · ":"")+freshness(clock);
  $("feed").replaceChildren(...combined.slice(0,expanded?50:20).map(r=>{
-   const who=el("small");who.append(walletIdentity(r.wallet,r.name,r.kind));
-   const top=el("b");top.append(el("span",t(r.kind),"badge "+r.kind),document.createTextNode(format(r.kito,4)+" KITO"));
-   const details=el("small");details.append(tx(r));
-   const right=el("small");if(r.ton)right.append(el("b",format(r.ton,4)+" TON"));
-   right.append(document.createTextNode(stamp(r.time)));return row(top,who,right,details)
+   const who=el("small");who.append(walletIdentity(r.wallet,r.name,r.kind,{activity:true}));
+   const label=r.method==="zero"?t("toZero"):t(r.kind);
+   const top=el("b");top.append(el("span",label,"badge "+r.kind),document.createTextNode(format(r.kito,4)+" KITO"));
+   const right=el("small",r.ton?format(r.ton,4)+" GRAM":"");
+   const meta=[r.kind!=="burn"?r.dex||"DeDust":"",stamp(r.time)].filter(Boolean).join(" · ");
+   const desktop=el("small",meta,"opDesktop");
+   desktop.append(document.createElement("br"), tx(r));
+   const toggle=el("button",undefined,"opToggle");
+   toggle.type="button";
+   toggle.setAttribute("aria-label",t("operationDetails"));
+   toggle.setAttribute("aria-expanded","false");
+   const chevron=el("span");
+   chevron.setAttribute("aria-hidden","true");
+   toggle.append(chevron);
+   const full=el("small",meta,"opMobile");
+   full.id="operation-"+r.tx;
+   full.hidden=true;
+   full.append(document.createElement("br"),tx(r));
+   toggle.setAttribute("aria-controls",full.id);
+   toggle.onclick=()=>{
+     full.hidden=!full.hidden;
+     toggle.setAttribute("aria-expanded",String(!full.hidden));
+   };
+   const item=row(top,who,right,desktop);
+   item.classList.add("operationRow","trade-"+r.kind);
+   item.append(toggle,full);
+   return item
  }));
  if(!combined.length)$("feed").append(el("p",t($("feedDomains").checked?"noneTagged":"none"),"empty"));
  $("more").hidden=combined.length<=20;$("more").textContent=expanded?t("less"):t("more").replace("30",String(Math.min(30,combined.length-20)));
@@ -387,16 +454,14 @@ function list(){
 function ranks(){
  const lastActivity=lastTradeByWallet();
  const isHolder=ranking==="holders",source=isHolder?snapshot.holders:snapshot.trades;
- $("rankDescription").textContent=t(isHolder?"holderHint":"sellerHint")+(isHolder?" "+wl("holderKey"):"");
  select("views",[t("holders"),t("sellers")],isHolder?0:1,i=>{ranking=i?"sellers":"holders";ranks()});
  $("sellerPeriods").replaceChildren();if(!isHolder)select("sellerPeriods",t("dayLabels"),[1,7,30].indexOf(sellerDays),i=>{sellerDays=[1,7,30][i];ranks()});
- let data;if(isHolder){data=source?.holders||[];$("rankNote").textContent=freshness(source)+(source?" · "+t("allHolders")+" "+format(source.holderCount,0):"")}
- else{const groups=new Map(),cut=(source?.asOf||0)-sellerDays*day;for(const r of source?.rows||[]){if(r.kind!=="sell"||r.time<=cut||r.time>source.asOf)continue;const g=groups.get(r.wallet)||{...r,kito:0,count:0};g.kito+=Number(r.kito);g.count++;groups.set(r.wallet,g)}data=[...groups.values()].sort((a,b)=>b.kito-a.kito).slice(0,20);$("rankNote").textContent=[freshness(source),coverage(source,cut)].filter(Boolean).join(" · ")}
- $("rank").replaceChildren(...data.map((r,i)=>{const title=el("b");title.append(el("span",String(i+1).padStart(2,"0"),"position"),walletIdentity(r.wallet,r.name,isHolder?lastActivity.get(r.wallet):"sell",isHolder));return row(title,el("small",isHolder?t("balance"):t("sold")),el("b",format(r.kito)+" KITO"),el("small",isHolder?format(r.share,4)+"%":(lang==="ru"?"Сделок: ":"Trades: ")+format(r.count,0)))}));if(!data.length)$("rank").append(el("p",source?t("none"):t("no"),"empty"))
+ let data;if(isHolder){data=source?.holders||[]}
+ else{const groups=new Map(),cut=(source?.asOf||0)-sellerDays*day;for(const r of source?.rows||[]){if(r.kind!=="sell"||r.time<=cut||r.time>source.asOf)continue;const g=groups.get(r.wallet)||{...r,kito:0,count:0};g.kito+=Number(r.kito);g.count++;groups.set(r.wallet,g)}data=[...groups.values()].sort((a,b)=>b.kito-a.kito).slice(0,20)}
+ $("rank").replaceChildren(...data.map((r,i)=>{const title=el("b");title.append(el("span",String(i+1).padStart(2,"0"),"position"),walletIdentity(r.wallet,r.name,isHolder?lastActivity.get(r.wallet):"sell",{holder:isHolder}));return row(title,el("small",isHolder?t("balance"):t("sold")),el("b",format(r.kito)+" KITO"),el("small",isHolder?format(r.share,4)+"%":(lang==="ru"?"Сделок: ":"Trades: ")+format(r.count,0)))}));if(!data.length)$("rank").append(el("p",source?t("none"):t("no"),"empty"))
 }
 function render(){document.documentElement.lang=lang;document.querySelectorAll("[data-t]").forEach(n=>n.textContent=t(n.dataset.t));for(const l of ["ru","en"]){$(l).classList.toggle("on",l===lang);$(l).setAttribute("aria-pressed",l===lang);$(l).onclick=()=>{lang=l;try{localStorage.setItem("kito-lang",l)}catch{}render()}}
- $("walletLegend").textContent=wl("key");
- select("periods",t("periodNames"),period,i=>{period=i;render()});$("copy").textContent=t("copy");$("contract").href="https://gram.org/jetton/"+MASTER;$("contractAddress").textContent=MASTER;chart();stats();list();ranks();renderSyncStatus()}
+ select("periods",t("periodNames"),period,i=>{period=i;render()});$("copy").textContent=t("copy");$("contract").href="https://gram.org/jetton/"+MASTER;$("contractAddress").textContent=MASTER;updateBurnTotals();chart();stats();list();ranks();renderSyncStatus()}
 $("copy").onclick=async()=>{try{await navigator.clipboard.writeText(MASTER);$("copy").textContent=t("copied")}catch{window.prompt(t("copy"),MASTER)}};
 $("feedDomains").onchange=()=>{expanded=false;list()};
 $("more").onclick=()=>{expanded=!expanded;list()};window.addEventListener("resize",chart);render();

@@ -16,6 +16,7 @@ TOKENS = {
     "phoenix": ("EQABtSLSzrAOISWPfIjBl2VmeStkM1eHaPrUxRTj8mY-9h43", True),
 }
 COLLECTIONS = {
+    "blueNft": "EQBmoucipH0QT_qpd361W-9zUlyFsSl1FD1GIY0AfXdpPQW8",
     "author": AUTHOR,
     "vnukNft": "EQBHe9CCEGOW6xpnLEqUx3bJ3lYgaCXmlokE5xPckXtY3f4X",
     "joystickNft": "EQCZIvCtiPmacSrvOUvsJE7P5si6letm0Bo0EYMl5c5F-cbQ",

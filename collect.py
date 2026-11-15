@@ -7,6 +7,7 @@ from pathlib import Path
 import assets
 import badges
 import domains
+import observatory
 import trades
 
 ROOT = Path(__file__).resolve().parent
@@ -39,11 +40,10 @@ def refresh():
                     cursor = dict(old.get("cursor", {}))
                     rows, start = trades.collect(rows, cutoff, cursor)
                 else:
-                    start_at = max(cutoff, old.get("asOf", cutoff) - 3600)
-                    rows, start = assets.burns(rows, start_at)
-                    if old.get("since") and start <= old["asOf"]:
-                        start = max(cutoff, min(start, old["since"]))
-                section = {"rows": sorted((r for r in rows if r["time"] >= cutoff), key=lambda r: (-r["time"], r["tx"])), "since": start, "asOf": now}
+                    start = 1
+                    start_at = max(1, old["asOf"] - 3600) if old.get("since") == 1 else 1
+                    rows, _ = assets.burns(rows, start_at)
+                section = {"rows": sorted((r for r in rows if key == "burns" or r["time"] >= cutoff), key=lambda r: (-r["time"], r["tx"])), "since": start, "asOf": now}
                 if key == "trades":
                     section["cursor"] = cursor
             snapshot[key] = section
@@ -61,6 +61,12 @@ def refresh():
         snapshot["badges"] = badges.refresh(snapshot.get("badges", {}), now)
         if snapshot["badges"]["failed"]:
             errors.append("badges")
+        try:
+            snapshot["zeroBurns"] = observatory.zero_burns(snapshot.get("zeroBurns", {}), now)
+        except Exception as error:
+            errors.append("zeroBurns")
+            print("Zero-address burns:", error, flush=True)
+        snapshot["identity"] = observatory.identity(snapshot, now)
         snapshot.update(schema=1, updated=now, errors=errors)
         DATA.parent.mkdir(exist_ok=True)
         save(DATA, snapshot)

@@ -277,3 +277,20 @@ html[lang="en"] #pools [lang="en"]{display:inline}
 #pools .poolSources{margin-top:13px;font-size:12px}
 @media(max-width:800px){#pools .poolGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:500px){#pools .poolGrid{grid-template-columns:minmax(0,1fr)}}
+
+.columns .row .projectBadge.og{border-color:#a887c2;background:#222033}
+.projectBadge.og span{background:linear-gradient(90deg,#cbff69,#f3a5ff,#cbff69);background-size:210% 100%;background-clip:text;color:transparent;animation:projectBadgeGlow 4s ease-in-out infinite alternate;font-weight:800}
+.columns .row .projectBadge.burner{border-color:#966237;padding-inline:4px}
+.columns .row .projectBadge.blueNft{border-color:#3881a9;padding-inline:4px}
+.operationRow .opMobile,.operationRow .opToggle{display:none}
+#feed .operationRow .opDesktop a{display:inline-block}
+@media(prefers-reduced-motion:reduce){.projectBadge.og span{animation:none}}
+@media(max-width:640px){
+ #feed .operationRow{grid-template-columns:minmax(0,1fr) minmax(0,auto) 28px;align-items:start;column-gap:4px;padding:8px 0}
+ #feed .operationRow .opDesktop{display:none}
+ #feed .operationRow>div:nth-child(2){align-self:start}
+ #feed .operationRow .opMobile:not([hidden]){display:block;grid-column:1/-1;text-align:left;padding:2px 0 4px}
+ #feed .operationRow .opToggle{display:grid;place-items:center;width:28px;min-height:32px;padding:0;background:none;border:0;color:#b8d3ec;cursor:pointer}
+ .opToggle span{width:7px;height:7px;border-right:2px solid;border-bottom:2px solid;transform:rotate(45deg)}
+ .opToggle[aria-expanded="true"] span{transform:rotate(225deg)}
+}
