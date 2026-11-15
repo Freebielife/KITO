@@ -281,7 +281,6 @@ function walletIdentity(raw,name,kind,{activity=false, holder=false}={}){
   for(const type of ["digits","sub"]){
     const names=record?.[type]||[];
     if(!names.length)continue;
-    wrapper.classList.add(type==="digits"?"hasDigits":"hasSub");
     const badge=el("span",names[0],"domainBadge "+type);
     if(address.textContent===names[0]) badge.hidden=true;
     badge.title=wl(type)+" · "+wl("checked")+" · "+stamp(type==="digits"?record.digitsAt:record.subAt);

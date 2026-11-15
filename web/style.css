@@ -154,10 +154,6 @@ details.domainDetails summary{color:var(--muted);font-size:11px}
 .onlyBadges{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;margin:4px 0 7px;cursor:pointer}
 .onlyBadges input{width:16px;height:16px;accent-color:var(--link)}
 
-.walletIdentity.hasDigits .walletAddress,.walletIdentity.hasSub .walletAddress{border-radius:4px;padding:1px 4px}
-.walletIdentity.hasDigits .walletAddress{background:#ffedb2}
-.walletIdentity.hasSub .walletAddress{background:#78DBE2}
-.walletIdentity.hasDigits.hasSub .walletAddress{background:linear-gradient(105deg,#ffedb2 48%,#78DBE2 52%)}
 
 @keyframes kitoGold{from{background-position:0% 50%}
 to{background-position:100% 50%}}
