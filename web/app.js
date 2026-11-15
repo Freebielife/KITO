@@ -485,7 +485,13 @@ function renderSyncStatus(){
 }
 const refresh=createSnapshotLoader({
  getSnapshot:()=>snapshot,
- applySnapshot:next=>{snapshot=next;render()},
+ applySnapshot:next=>{
+  for(const key of ["zeroBurns","identity"]){
+    if(snapshot[key]&&(!next[key]||snapshot[key].asOf>next[key].asOf))next[key]=snapshot[key];
+  }
+  snapshot=next;
+  render();
+ },
  onState:state=>{syncState={...syncState,...state};renderSyncStatus()}
 });
 $('refreshData').onclick=()=>refresh();
