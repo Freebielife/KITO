@@ -4,6 +4,7 @@ import time
 from urllib.parse import urlencode
 
 from assets import DOMAIN, MASTER, MASTER_RAW, fetch, raw_address, resolved_domain, token_amount
+from domains import DIGITS
 from badges import POOL_RAW, ZERO
 
 TONCENTER = "https://toncenter.com/api/v3"
@@ -113,18 +114,23 @@ def identity(snapshot, now, budget=32, pace=1.05):
             label = role(wallet, account) if wallet in top else record.get("role")
             names = fetch(f"/accounts/{wallet}/dns/backresolve", attempts=2)["domains"] if account["is_wallet"] else []
             domain = None
-            for name in list(dict.fromkeys([*names, (account.get("name") or "").lower()]))[:9]:
-                if not DOMAIN.fullmatch(name):
+            linked_digits = []
+            candidates = list(dict.fromkeys([*names, (account.get("name") or "").lower()]))
+            for name in candidates:
+                numeric = DIGITS.fullmatch(name)
+                if not DOMAIN.fullmatch(name) or (domain and not numeric):
                     continue
                 time.sleep(pace)
-                domain = resolved_domain({"address": wallet, "name": name}, strict=True)
-                if domain:
-                    break
+                validated = resolved_domain({"address": wallet, "name": name}, strict=True)
+                if validated:
+                    domain = domain or validated
+                    if numeric:
+                        linked_digits.append(validated)
             at = record.get("activated")
             if not at and account["is_wallet"] and account.get("status") == "active":
                 time.sleep(pace)
                 at = activation(wallet)
-            record.update(checked=now, domain=domain, role=label, activated=at)
+            record.update(checked=now, domain=domain, linkedDigits=linked_digits, role=label, activated=at)
         except RECOVERABLE as exc:
             print("Identity check:", wallet[:12], exc, flush=True)
         time.sleep(pace)
