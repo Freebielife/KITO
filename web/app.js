@@ -2,6 +2,38 @@
 const MASTER="EQCSLLVQ8qdhEqZUKaiKU7F6sVfnNPmQ4FsCpCo8olo795LP";
 const texts = {
   "ru": {
+    "volumeTitle": "Объём сделок",
+    "volumeEmpty": "За этот период сделки не найдены",
+    "largeTrades": "Крупные сделки",
+    "minimumSize": "От, GRAM",
+    "walletSearch": "Поиск кошелька",
+    "walletPlaceholder": "Адрес кошелька или .ton-домен",
+    "walletFind": "Найти",
+    "walletPending": "Проверяем кошелёк…",
+    "walletInvalid": "Введите корректный адрес TON или .ton-домен.",
+    "walletDomainMissing": "Домен не привязан к кошельку или не найден.",
+    "walletNetwork": "Сервис TON недоступен. Попробуйте ещё раз.",
+    "walletBalance": "Баланс",
+    "walletBalanceUnknown": "Данные о балансе недоступны",
+    "walletTop": "Место в топ‑20 держателей",
+    "walletOperations": "Последние операции по токену",
+    "walletNoOperations": "В загруженной истории операций нет.",
+    "rankGained": "Подъём на",
+    "rankLost": "Снижение на",
+    "badgeLegend": "О метках",
+    "noLargeTrades": "Сделок по этим условиям нет.",
+    "badgeStaking": "От 500 000 LUDOMAN в JVault, включая заявки на вывод.",
+    "badgeAuthor": "Любая NFT из авторской коллекции.",
+    "badgeVnuk": "Более 200 000 VNUK или NFT из коллекции VNUK.",
+    "badgeJoystick": "От 200 000 JSI или NFT из коллекции Joystick.",
+    "badgePhoenix": "От 200 000 PHX.",
+    "badgeBlue": "NFT из коллекции, указанной в ссылке на метке.",
+    "badgeOg": "Более пяти лет с первой активации кошелька.",
+    "badgeBurn": "Сожжено от 1 000 токенов проекта, включая переводы на нулевой адрес.",
+    "badgeArni": "Более 50 000 ARNI.",
+    "badgeNapiwas": "От 1 000 000 NAPIWAS.",
+    "badgeDigits": "Владение четырёхзначным .ton-доменом.",
+    "badgeSub": "Владение субдоменом .socool.ton.",
     "blueCollection":"Открыть NFT-коллекцию","activated":"Активация","burnBadge":"Сожжено от 1 000 токенов","toZero":"На нулевой адрес","operationDetails":"Подробности операции",
     "intro": "Цена, сделки и держатели KITO в сети TON.",
     "swap": "Обмен на DeDust",
@@ -80,6 +112,38 @@ const texts = {
     "noneTagged": "Среди проверенных адресов для этого фильтра записей нет."
   },
   "en": {
+    "volumeTitle": "Trade volume",
+    "volumeEmpty": "No trades found for this period",
+    "largeTrades": "Large trades",
+    "minimumSize": "Minimum GRAM",
+    "walletSearch": "Wallet search",
+    "walletPlaceholder": "TON address or .ton domain",
+    "walletFind": "Find",
+    "walletPending": "Checking wallet…",
+    "walletInvalid": "Enter a valid TON address or .ton domain.",
+    "walletDomainMissing": "The domain was not found or has no wallet linked.",
+    "walletNetwork": "TON data is unavailable. Try again.",
+    "walletBalance": "Balance",
+    "walletBalanceUnknown": "Balance data is unavailable",
+    "walletTop": "Top 20 holder rank",
+    "walletOperations": "Recent token activity",
+    "walletNoOperations": "No activity in the loaded history.",
+    "rankGained": "Places gained:",
+    "rankLost": "Places lost:",
+    "badgeLegend": "Badge guide",
+    "noLargeTrades": "No trades match these filters.",
+    "badgeStaking": "At least 500,000 LUDOMAN in JVault, including pending withdrawals.",
+    "badgeAuthor": "An NFT from the author collection.",
+    "badgeVnuk": "Over 200,000 VNUK or an NFT from the VNUK collection.",
+    "badgeJoystick": "At least 200,000 JSI or an NFT from the Joystick collection.",
+    "badgePhoenix": "At least 200,000 PHX.",
+    "badgeBlue": "An NFT from the collection linked on the badge.",
+    "badgeOg": "Over five years since the wallet was first activated.",
+    "badgeBurn": "At least 1,000 project tokens burned, including transfers to the zero address.",
+    "badgeArni": "Over 50,000 ARNI.",
+    "badgeNapiwas": "At least 1,000,000 NAPIWAS.",
+    "badgeDigits": "Ownership of a four-digit .ton domain.",
+    "badgeSub": "Ownership of a .socool.ton subdomain.",
     "blueCollection":"Open NFT collection","activated":"Activated","burnBadge":"Burned at least 1,000 tokens","toZero":"Transfer to zero address","operationDetails":"Transaction details",
     "intro": "Price, trades and KITO holders on TON.",
     "swap": "Swap on DeDust",
@@ -212,6 +276,8 @@ const projectBadgeDefs=[
   ["vnuk","VNUK","https://t.me/mRvnukICHlife"],
   ["joystick","Joystick","https://t.me/joystickpro"],
   ["phoenix","Phoenix","https://t.me/PHXPW"],
+  ["arni","ARNI","https://t.me/TonArnold"],
+  ["napiwas","NAPIWAS","https://t.me/NAPIWASofficial"],
   ["blueNft","","https://getgems.io/collection/EQBmoucipH0QT_qpd361W-9zUlyFsSl1FD1GIY0AfXdpPQW8"]
 ];
 function appendProjectBadges(wrapper,wallet){
@@ -230,11 +296,15 @@ function appendProjectBadges(wrapper,wallet){
       :url;
     const badge=link(target,"");
     badge.className="projectBadge "+key;
-    if(key!=="author"){
+    if(key==="napiwas"){
+      const icon=el("span",undefined,"beerIcon");
+      icon.setAttribute("aria-hidden","true");
+      badge.append(icon);
+    }else if(key!=="author"){
       const icon=$("badge-icon-"+key).content.firstElementChild.cloneNode();
       badge.append(icon);
     }
-    if(label)badge.append(el("span",label));
+    if(label)badge.append(el("span",label,"badgeLabel"));
     if(key==="blueNft"){
       badge.title=t("blueCollection");
       badge.setAttribute("aria-label",badge.title);
@@ -300,14 +370,16 @@ function burnRows(){
   for(const r of [...(snapshot.zeroBurns?.rows||[]),...(snapshot.burns?.rows||[])])rows.set(r.tx,r);
   return [...rows.values()];
 }
+function tokenUnits(value){
+  const [whole,fraction=""]=String(value).split(".");
+  if(!/^\d+$/.test(whole)||!/^\d{0,9}$/.test(fraction))return 0n;
+  return BigInt(whole)*10n**9n+BigInt(fraction.padEnd(9,"0"));
+}
 let burnTotals;
 function updateBurnTotals(){
   burnTotals=new Map();
-  for(const r of burnRows()){
-    const [whole,fraction=""]=String(r.kito).split(".");
-    if(!/^\d+$/.test(whole)||!/^\d{0,9}$/.test(fraction))continue;
-    const units=BigInt(whole)*10n**9n+BigInt(fraction.padEnd(9,"0"));
-    burnTotals.set(r.wallet,(burnTotals.get(r.wallet)||0n)+units);
+  for(const row of burnRows()){
+    burnTotals.set(row.wallet,(burnTotals.get(row.wallet)||0n)+tokenUnits(row.kito));
   }
 }
 function lastTradeByWallet(){
@@ -325,6 +397,162 @@ function capFormat(n,compact=false){
  return Number(n).toLocaleString(lang,{maximumFractionDigits:compact?1:0,...(compact?{notation:'compact'}:{})});
 }
 function svg(tag,attrs){const n=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const [k,v] of Object.entries(attrs))n.setAttribute(k,v);return n}
+function volumeBars(start,end,width,left,right){
+ const main=$("tradeVolume");
+ const rows=snapshot.trades?.rows||[];
+ const bins=Array.from({length:30},()=>({buy:0,sell:0}));
+ const step=(end-start)/bins.length;
+ if(step>0){
+   for(const row of rows){
+     if((row.kind!=="buy"&&row.kind!=="sell")||row.time<start||row.time>end)continue;
+     const value=Number(row.ton);
+     if(!Number.isFinite(value)||value<=0)continue;
+     bins[Math.min(bins.length-1,Math.floor((row.time-start)/step))][row.kind]+=value;
+   }
+ }
+ const totals=bins.reduce((sum,bin)=>({buy:sum.buy+bin.buy,sell:sum.sell+bin.sell}),{buy:0,sell:0});
+ $("volumeBuys").textContent=t("buys")+" · "+format(totals.buy)+" GRAM";
+ $("volumeSells").textContent=t("sells")+" · "+format(totals.sell)+" GRAM";
+ const peak=Math.max(...bins.map(bin=>bin.buy+bin.sell));
+ $("volumeEmpty").hidden=peak>0;
+ const plot=svg("svg",{viewBox:"0 0 "+width+" 58",preserveAspectRatio:"none",role:"img","aria-label":t("volumeTitle")});
+ const spacing=(right-left)/bins.length;
+ if(peak>0){
+   plot.append(svg("path",{d:"M"+left+" 56H"+right,stroke:"#344b5b"}));
+   for(const [i,bin] of bins.entries()){
+     let floor=56;
+     const bars=svg("g",{});
+     const title=svg("title",{});
+     title.textContent=stamp(start+i*step)+" · "+t("buys")+" "+format(bin.buy)+" · "+t("sells")+" "+format(bin.sell)+" GRAM";
+     bars.append(title);
+     for(const kind of ["buy","sell"]){
+       if(!bin[kind])continue;
+       const height=bin[kind]/peak*52;
+       floor-=height;
+       bars.append(svg("rect",{x:left+i*spacing,y:floor,width:Math.max(1,spacing-1),height,fill:kind==="buy"?"#57cba1":"#f27f8a"}));
+     }
+     if(bars.childElementCount>1)plot.append(bars);
+   }
+ }
+ main.replaceChildren(...(peak>0?[plot]:[]));
+}
+
+let lookupResult,lookupPending;
+const walletPattern=/^(0|-1):[0-9a-f]{64}$/i;
+const dnsPattern=/^(?:[a-z0-9-]+\.)+ton$/i;
+
+function rawLookupAddress(value){
+ if(walletPattern.test(value))return value.toLowerCase();
+ if(!/^[A-Za-z0-9+/_-]{48}$/.test(value))return null;
+ const bytes=atob(value.replaceAll("-","+").replaceAll("_","/"));
+ const tag=bytes.charCodeAt(0),chain=bytes.charCodeAt(1);
+ if(![0x11,0x51].includes(tag)||![0,255].includes(chain))return null;
+ const hex=Array.from(bytes.slice(2,34),c=>c.charCodeAt(0).toString(16).padStart(2,"0")).join("");
+ const raw=(chain===255?-1:0)+":"+hex;
+ const supplied=value.replaceAll("+","-").replaceAll("/","_");
+ return explorerAddress(raw,tag===0x11)===supplied?raw:null;
+}
+
+async function lookupData(path,signal){
+ const result=await fetch("https://tonapi.io/v2"+path,{signal,headers:{Accept:"application/json"}});
+ if(result.status===404)return null;
+ if(!result.ok)throw new Error("Wallet lookup failed");
+ return result.json();
+}
+
+function renderLookup(){
+ $("walletQuery").placeholder=t("walletPlaceholder");
+ $("walletQuery").setAttribute("aria-label",t("walletPlaceholder"));
+ $("walletFind").textContent=t("walletFind");
+ const target=$("walletResult");target.replaceChildren();
+ if(!lookupResult){target.hidden=true;return}
+ target.hidden=false;
+ const {wallet,name,balance,status}=lookupResult;
+ if(status&&(!wallet||status==="walletPending")){target.append(el("p",t(status),"note"));return}
+ const holders=snapshot.holders?.holders||[];
+ const rank=holders.findIndex(row=>row.wallet===wallet);
+ const holder=holders[rank];
+ const title=el("h3");
+ title.append(walletIdentity(wallet,name||holder?.name,undefined,{holder:true}));
+ target.append(title);
+ const value=balance??holder?.kito;
+ const holding=el("p",value==null?t("walletBalanceUnknown"):t("walletBalance")+": "+format(value,4)+" KITO");
+ if(balance==null&&holder)holding.append(" · "+stamp(snapshot.holders.asOf));
+ target.append(holding);
+ if(rank>=0){
+   const entry=el("p",t("walletTop")+" ");
+   entry.append(rankPosition(rank,snapshot.holders.previousRanks?.[wallet]));
+   target.append(entry);
+ }
+ const recent=[...(snapshot.trades?.rows||[]),...burnRows()].filter(row=>row.wallet===wallet)
+   .sort((a,b)=>b.time-a.time||a.tx.localeCompare(b.tx)).slice(0,5);
+ target.append(el("h4",t("walletOperations")));
+ if(!recent.length){target.append(el("p",t("walletNoOperations"),"note"));return}
+ const entries=el("ul");
+ for(const row of recent){
+   const item=el("li");
+   item.append(el("span",t(row.kind)+" · "+format(row.kito,4)+" KITO")," · ",tx(row));
+   entries.append(item);
+ }
+ target.append(entries);
+}
+
+async function findWallet(event){
+ event.preventDefault();
+ lookupPending?.abort();
+ lookupPending=null;
+ const input=$("walletQuery").value.trim();
+ let wallet=rawLookupAddress(input),name=null,balance=null;
+ if(!wallet&&!dnsPattern.test(input)){lookupResult={status:"walletInvalid"};renderLookup();return}
+ const controller=new AbortController();lookupPending=controller;
+ const timeout=setTimeout(()=>controller.abort(),12000);
+ lookupResult={status:"walletPending"};renderLookup();
+ try{
+   if(!wallet){
+     const query=input.toLowerCase();
+     const cached=Object.keys(snapshot.identity?.byWallet||{}).find(key=>linkedDomain(key)===query)
+       ||snapshot.holders?.holders?.find(row=>row.name===query)?.wallet;
+     try{
+       const record=await lookupData("/dns/"+encodeURIComponent(query)+"/resolve",controller.signal);
+       wallet=rawLookupAddress(record?.wallet?.address||"");
+     }catch(error){ if(!cached)throw error; wallet=cached; }
+     if(!wallet){
+       if(lookupPending===controller)lookupResult={status:"walletDomainMissing"};
+       return;
+     }
+     name=query;
+   }
+   const record=await lookupData("/accounts/"+encodeURIComponent(wallet)+"/jettons/"+MASTER,controller.signal);
+   if(record&&rawLookupAddress(record.jetton?.address||"")===rawLookupAddress(MASTER)&&/^\d+$/.test(record.balance)){
+     const decimals=Number(record.jetton.decimals);
+     if(Number.isInteger(decimals)&&decimals>=0&&decimals<=30)balance=Number(record.balance)/10**decimals;
+   }
+ }catch{
+   if(!wallet){
+     if(lookupPending===controller)lookupResult={status:"walletNetwork"};
+     return;
+   }
+ }finally{
+   clearTimeout(timeout);
+   if(lookupPending===controller){
+     if(wallet)lookupResult={wallet,name,balance};
+     renderLookup();
+   }
+ }
+}
+
+function rankPosition(index,previous){
+ const position=el("span",undefined,"position");
+ position.append(el("span",String(index+1).padStart(2,"0")));
+ if(Number.isInteger(previous)&&previous!==index+1){
+   const delta=previous-index-1, up=delta>0;
+   const badge=el("span",(up?"↑":"↓")+Math.abs(delta),"rankMove "+(up?"gained":"lost"));
+   badge.setAttribute("aria-label",t(up?"rankGained":"rankLost")+" "+Math.abs(delta));
+   position.append(badge);
+ }
+ return position;
+}
+
 function chart(){
  const section=snapshot.trades, model=marketCapSeries(snapshot,ranges[period]), {start,end,points}=model;
  $('lastPrice').textContent=model.latestCap!==null?capFormat(model.latestCap)+' TON':'—';
@@ -394,6 +622,7 @@ function chart(){
    const label=svg('text',{x:pos,y:234,'text-anchor':anchor});label.textContent=axisTime(time);box.append(label);
  }
  plot.append(box);
+ volumeBars(start,end,width,left,right);
  $('chartInfo').textContent=[freshness(section),coverage(section,start),!model.tradeCount&&points.length?t('capNoTrades'):'',snapshot.holders?.asOf<section?.asOf?(lang==='ru'?'Предложение на ':'Supply as of ')+stamp(snapshot.holders.asOf):''].filter(Boolean).join(' · ');
 }
 function stats(){
@@ -416,7 +645,11 @@ function row(first,sub,value,last){const a=el("div"),b=el("div"),d=el("div",unde
 function list(){
  const kinds=["all","buy","sell","burn"];
  select("filters",[t("filterAll"),t("buys"),t("sells"),t("burnCount")],kinds.indexOf(feedKind),i=>{feedKind=kinds[i];expanded=false;list()});
+ const large=$("largeTrades").checked;
+ const threshold=$("minTradeSize").valueAsNumber;
+ $("minTradeSize").disabled=!large;
  const combined=[...(snapshot.trades?.rows||[]),...burnRows()]
+   .filter(r=>!large||(r.kind!=="burn"&&Number.isFinite(threshold)&&threshold>=0&&Number(r.ton)>=threshold))
    .filter(r=>(feedKind==="all"||r.kind===feedKind)&&(!$("feedDomains").checked||hasDomainBadge(r.wallet))).sort((a,b)=>b.time-a.time||a.tx.localeCompare(b.tx)).slice(0,50);
  $("feed").replaceChildren(...combined.slice(0,expanded?50:20).map(r=>{
    const who=el("small");who.append(walletIdentity(r.wallet,r.name,r.kind,{activity:true}));
@@ -447,21 +680,38 @@ function list(){
    item.append(toggle,full);
    return item
  }));
- if(!combined.length)$("feed").append(el("p",t($("feedDomains").checked?"noneTagged":"none"),"empty"));
+ if(!combined.length)$("feed").append(el("p",t(large?"noLargeTrades":$("feedDomains").checked?"noneTagged":"none"),"empty"));
  $("more").hidden=combined.length<=20;$("more").textContent=expanded?t("less"):t("more").replace("30",String(Math.min(30,combined.length-20)));
+}
+function rankedSellers(source){
+ const groups=new Map();
+ const cut=(source?.asOf||0)-sellerDays*day;
+ for(const row of source?.rows||[]){
+   if(row.kind!=="sell"||row.time<=cut||row.time>source.asOf)continue;
+   const group=groups.get(row.wallet)||{...row,units:0n,count:0};
+   group.units+=tokenUnits(row.kito);
+   group.count++;
+   groups.set(row.wallet,group);
+ }
+ return [...groups.values()].sort((a,b)=>{
+   if(a.units!==b.units)return a.units>b.units?-1:1;
+   return a.wallet<b.wallet?-1:1;
+ }).slice(0,20);
 }
 function ranks(){
  const lastActivity=lastTradeByWallet();
  const isHolder=ranking==="holders",source=isHolder?snapshot.holders:snapshot.trades;
  select("views",[t("holders"),t("sellers")],isHolder?0:1,i=>{ranking=i?"sellers":"holders";ranks()});
  $("sellerPeriods").replaceChildren();if(!isHolder)select("sellerPeriods",t("dayLabels"),[1,7,30].indexOf(sellerDays),i=>{sellerDays=[1,7,30][i];ranks()});
- let data;if(isHolder){data=source?.holders||[]}
- else{const groups=new Map(),cut=(source?.asOf||0)-sellerDays*day;for(const r of source?.rows||[]){if(r.kind!=="sell"||r.time<=cut||r.time>source.asOf)continue;const g=groups.get(r.wallet)||{...r,kito:0,count:0};g.kito+=Number(r.kito);g.count++;groups.set(r.wallet,g)}data=[...groups.values()].sort((a,b)=>b.kito-a.kito).slice(0,20)}
- $("rank").replaceChildren(...data.map((r,i)=>{const title=el("b");title.append(el("span",String(i+1).padStart(2,"0"),"position"),walletIdentity(r.wallet,r.name,isHolder?lastActivity.get(r.wallet):"sell",{holder:isHolder}));return row(title,el("small",isHolder?t("balance"):t("sold")),el("b",format(r.kito)+" KITO"),el("small",isHolder?format(r.share,4)+"%":(lang==="ru"?"Сделок: ":"Trades: ")+format(r.count,0)))}));if(!data.length)$("rank").append(el("p",source?t("none"):t("no"),"empty"))
+ const data=isHolder?source?.holders||[]:rankedSellers(source);
+ const previous=isHolder?source?.previousRanks:source?.previousRanks?.[sellerDays];
+ $("rank").replaceChildren(...data.map((r,i)=>{const title=el("b");title.append(rankPosition(i,previous?.[r.wallet]),walletIdentity(r.wallet,r.name,isHolder?lastActivity.get(r.wallet):"sell",{holder:isHolder}));return row(title,el("small",isHolder?t("balance"):t("sold")),el("b",format(isHolder?r.kito:Number(r.units)/1e9)+" KITO"),el("small",isHolder?format(r.share,4)+"%":(lang==="ru"?"Сделок: ":"Trades: ")+format(r.count,0)))}));if(!data.length)$("rank").append(el("p",source?t("none"):t("no"),"empty"))
 }
 function render(){document.documentElement.lang=lang;document.querySelectorAll("[data-t]").forEach(n=>n.textContent=t(n.dataset.t));for(const l of ["ru","en"]){$(l).classList.toggle("on",l===lang);$(l).setAttribute("aria-pressed",l===lang);$(l).onclick=()=>{lang=l;try{localStorage.setItem("kito-lang",l)}catch{}render()}}
- select("periods",t("periodNames"),period,i=>{period=i;render()});$("copy").textContent=t("copy");$("contract").href="https://gram.org/jetton/"+MASTER;$("contractAddress").textContent=MASTER;updateBurnTotals();chart();stats();list();ranks();renderSyncStatus()}
+ select("periods",t("periodNames"),period,i=>{period=i;render()});$("copy").textContent=t("copy");$("contract").href="https://gram.org/jetton/"+MASTER;$("contractAddress").textContent=MASTER;updateBurnTotals();chart();stats();list();ranks();renderLookup();renderSyncStatus()}
 $("copy").onclick=async()=>{try{await navigator.clipboard.writeText(MASTER);$("copy").textContent=t("copied")}catch{window.prompt(t("copy"),MASTER)}};
+$("walletSearchForm").onsubmit=findWallet;
+$("largeTrades").onchange=$("minTradeSize").oninput=()=>{expanded=false;list()};
 $("feedDomains").onchange=()=>{expanded=false;list()};
 $("more").onclick=()=>{expanded=!expanded;list()};window.addEventListener("resize",chart);render();
 function renderSyncStatus(){

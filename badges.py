@@ -12,6 +12,8 @@ POOL = "EQANDE3kcYMMSkumPIuj0BWLi2kTTRXng6FSYrvRbEpUv877"
 AUTHOR = "EQAhaFPX9zIBVYe_vfy3dudCkxJDjSoMjj59KndtHKcqo3iy"
 TOKENS = {
     "vnuk": ("EQCp6hbevSAM9G2WxeZDp0Mte6MPTUJouZrCNIeWHnhlOZZA", False),
+    "arni": ("EQAZzZzhBdrPwxFVQHWlMHbDY_eOk3LeUPr07VWdX4B0193M", False, 50_000),
+    "napiwas": ("EQDOCUp_pDBvOmGRyEDE2bnCl2cjGmAWjPsTWRt_veSsfGSn", True, 1_000_000),
     "joystick": ("EQBJpyjYjsZ5xhqClAgaSqVHlgFtsJvclU-93Ah-LequH5uC", True),
     "phoenix": ("EQABtSLSzrAOISWPfIjBl2VmeStkM1eHaPrUxRTj8mY-9h43", True),
 }
@@ -34,11 +36,11 @@ POOL_RAW = raw_friendly(POOL)
 ZERO = "0:" + "0" * 64
 
 
-def holders(master, inclusive):
+def holders(master, inclusive, threshold=200_000):
     jetton = fetch(f"/jettons/{master}")["metadata"]
     if jetton["address"] != raw_friendly(master):
         raise ValueError("Wrong jetton metadata")
-    limit = 200_000 * 10 ** int(jetton["decimals"])
+    limit = threshold * 10 ** int(jetton["decimals"])
     owners = {}
     for offset in range(0, 9000, 100):
         data = fetch(f"/jettons/{master}/holders?limit=100&sort_by=balance&offset={offset}")

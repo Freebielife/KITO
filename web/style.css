@@ -145,7 +145,7 @@ html{scroll-padding-top:98px}
 .row .walletAddress.burn,.walletRole.burn{color:#874305}
 .row .walletAddress.neutral{color:#51615c}
 .walletRole{font-size:11px;font-weight:600}
-.row .domainBadge{font:600 11px/1.4 system-ui,sans-serif;letter-spacing:0;padding:2px 6px;border-radius:5px;overflow-wrap:anywhere;max-width:100%;display:inline-block}
+:is(.row,.walletResult) .domainBadge{font:600 11px/1.4 system-ui,sans-serif;letter-spacing:0;padding:2px 6px;border-radius:5px;overflow-wrap:anywhere;max-width:100%;display:inline-block}
 .domainBadge.digits{color:#482e00;background:linear-gradient(110deg,#ffcc00 12%,#ffe173 34%,#fff9c0 46%,#ffd700 57%,#efb000 84%);background-size:220% 100%;border:1px solid #a37b00;animation:kitoGold 4s ease-in-out infinite alternate}
 .domainBadge.sub{color:#103a43;background:#78DBE2;border:1px solid #258693}
 details.domainDetails{display:inline-block;border:0;padding:0;font-size:12px;font-weight:500;width:100%}
@@ -241,21 +241,21 @@ footer{background:#090c10;border-top:1px solid #405362;padding:14px 18px;margin-
 .columns .walletRole.sell,.columns .badge.sell{color:#ff9a9f;background:none}
 .columns .walletRole.burn,.columns .badge.burn{color:#f1bd7d;background:none}
 .columns .domainDetails summary,.columns .domainDetails span{color:#becbd9!important}
-.columns .row .projectBadges{display:flex;flex-wrap:wrap;gap:5px;width:100%;align-items:center}
-.columns .row .projectBadge{--badge-edge:#53627b;display:inline-flex;align-items:center;gap:4px;padding:2px 6px;border:1px solid var(--badge-edge);border-radius:6px;background:#202939;text-decoration:none;color:#eaf1fb;font:650 11px/1.35 system-ui,sans-serif;min-height:26px;max-width:100%}
-.columns .row .projectBadge:hover{text-decoration:underline}
-.columns .row .projectBadge::after{display:none}
+.columns :is(.row,.walletResult) .projectBadges{display:flex;flex-wrap:wrap;gap:5px;width:100%;align-items:center}
+.columns :is(.row,.walletResult) .projectBadge{--badge-edge:#53627b;display:inline-flex;align-items:center;gap:4px;padding:2px 6px;border:1px solid var(--badge-edge);border-radius:6px;background:#202939;text-decoration:none;color:#eaf1fb;font:650 11px/1.35 system-ui,sans-serif;min-height:26px;max-width:100%}
+.columns :is(.row,.walletResult) .projectBadge:hover{text-decoration:underline}
+.columns :is(.row,.walletResult) .projectBadge::after{display:none}
 .projectBadge img{display:block;width:18px;height:18px;object-fit:contain;border-radius:3px}
-.columns .row .projectBadge.staking{padding-inline:4px;--badge-edge:#6c93cb}
-.columns .row .projectBadge.vnuk{--badge-edge:#8f606f;color:#ffc8d4}
-.columns .row .projectBadge.author{border-color:transparent;background:linear-gradient(#202939,#202939) padding-box,linear-gradient(105deg,#508eff,#dce5ee,#508eff) border-box;background-size:100% 100%,200% 100%;animation:projectBadgeGlow 5s ease-in-out infinite alternate}
-.columns .row .projectBadge.joystick{--badge-edge:#9164ac}
-.columns .row .projectBadge.phoenix{--badge-edge:#a86a36}
+.columns :is(.row,.walletResult) .projectBadge.staking{padding-inline:4px;--badge-edge:#6c93cb}
+.columns :is(.row,.walletResult) .projectBadge.vnuk{--badge-edge:#8f606f;color:#ffc8d4}
+.columns :is(.row,.walletResult) .projectBadge.author{border-color:transparent;background:linear-gradient(#202939,#202939) padding-box,linear-gradient(105deg,#508eff,#dce5ee,#508eff) border-box;background-size:100% 100%,200% 100%;animation:projectBadgeGlow 5s ease-in-out infinite alternate}
+.columns :is(.row,.walletResult) .projectBadge.joystick{--badge-edge:#9164ac}
+.columns :is(.row,.walletResult) .projectBadge.phoenix{--badge-edge:#a86a36}
 .projectBadge.joystick span,.projectBadge.phoenix span{background:linear-gradient(90deg,var(--badge-color),#ffe182,var(--badge-color));background-size:210% 100%;background-clip:text;color:transparent;animation:projectBadgeGlow 5s ease-in-out infinite alternate}
 .projectBadge.joystick{--badge-color:#e3a6ff}
 .projectBadge.phoenix{--badge-color:#ff9862}
 @keyframes projectBadgeGlow{to{background-position:100% 0}}
-@media(prefers-reduced-motion:reduce){.columns .row .projectBadge.author,.projectBadge.joystick span,.projectBadge.phoenix span{animation:none}}
+@media(prefers-reduced-motion:reduce){.columns :is(.row,.walletResult) .projectBadge.author,.projectBadge.joystick span,.projectBadge.phoenix span{animation:none}}
 #pools [lang="en"],html[lang="en"] #pools [lang="ru"]{display:none}
 html[lang="en"] #pools [lang="en"]{display:inline}
 #pools .poolIntro{margin:8px 0 16px}
@@ -274,10 +274,10 @@ html[lang="en"] #pools [lang="en"]{display:inline}
 @media(max-width:800px){#pools .poolGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:500px){#pools .poolGrid{grid-template-columns:minmax(0,1fr)}}
 
-.columns .row .projectBadge.og{border-color:#a887c2;background:#222033}
+.columns :is(.row,.walletResult) .projectBadge.og{border-color:#a887c2;background:#222033}
 .projectBadge.og span{background:linear-gradient(90deg,#cbff69,#f3a5ff,#cbff69);background-size:210% 100%;background-clip:text;color:transparent;animation:projectBadgeGlow 4s ease-in-out infinite alternate;font-weight:800}
-.columns .row .projectBadge.burner{border-color:#966237;padding-inline:4px}
-.columns .row .projectBadge.blueNft{border-color:#3881a9;padding-inline:4px}
+.columns :is(.row,.walletResult) .projectBadge.burner{border-color:#966237;padding-inline:4px}
+.columns :is(.row,.walletResult) .projectBadge.blueNft{border-color:#3881a9;padding-inline:4px}
 .operationRow .opMobile,.operationRow .opToggle{display:none}
 #feed .operationRow .opDesktop a{display:inline-block}
 @media(prefers-reduced-motion:reduce){.projectBadge.og span{animation:none}}
@@ -290,3 +290,39 @@ html[lang="en"] #pools [lang="en"]{display:inline}
  .opToggle span{width:7px;height:7px;border-right:2px solid;border-bottom:2px solid;transform:rotate(45deg)}
  .opToggle[aria-expanded="true"] span{transform:rotate(225deg)}
 }
+
+.volumeBlock{margin-top:12px;border-top:1px solid #344353;padding-top:10px}
+.volumeHeading,.volumeKeys,.tradeSize,.walletSearchForm{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.volumeHeading{justify-content:space-between}
+.volumeKeys,.tradeSize{font-size:12px}
+.volumeKeys span:first-child,.rankMove.gained{color:#80e0b6}
+.volumeKeys span:last-child,.rankMove.lost{color:#ff9da4}
+#tradeVolume svg{display:block;width:100%;height:56px}
+.tradeSize{margin:8px 0;color:#bdcbd8}
+.tradeSize label{display:inline-flex;align-items:center;gap:6px}
+.tradeSize input[type=number],.walletSearchForm input{min-width:0;border:1px solid #53637a;border-radius:7px;background:#161f2b;color:#eaf1fb;padding:6px 8px;font:inherit}
+.tradeSize input[type=number]{width:6em}
+#rank .position,.walletResult .position{display:inline-flex;align-items:baseline;gap:4px}
+.rankMove{font-size:10px;white-space:nowrap}
+.walletSearch,.badgeLegend{margin:10px 0;border:1px solid #39475b;border-radius:8px;padding:8px 10px}
+.walletSearch summary,.badgeLegend summary{cursor:pointer;color:#d6e2f0;font-size:13px;font-weight:650}
+.walletSearchForm{margin-top:9px}
+.walletSearchForm input{flex:1 1 145px}
+.walletSearchForm button{padding:6px 9px;border:1px solid #52637b;border-radius:7px;background:#243249;color:#eaf1fb;cursor:pointer}
+.walletResult{margin-top:9px;overflow-wrap:anywhere}
+.walletResult h3,.walletResult h4,.walletResult p{margin:6px 0}
+.walletResult ul,.badgeLegend dl{padding-left:0;margin:8px 0 0;font-size:12px}
+.walletResult li{margin-left:15px;padding-top:3px}
+.badgeLegend dl{display:grid;grid-template-columns:auto 1fr;gap:5px 8px}
+.badgeLegend dd{margin:0;color:#bdcbd8}
+.columns .projectBadge.arni,.columns .projectBadge.napiwas{border-color:#927fa2}
+.columns .projectBadge.arni span,.columns .projectBadge.napiwas .badgeLabel{
+ background:linear-gradient(90deg,#70e1dd,#c4b4ff,#ffab94,#ffe39a,#70e1dd);
+ background-size:225% 100%;background-clip:text;color:transparent;
+ animation:projectBadgeGlow 4.3s ease-in-out infinite alternate
+}
+.projectBadge .beerIcon{position:relative;display:inline-block;flex:0 0 18px;width:18px;height:18px}
+.beerIcon::before,.beerIcon::after{content:"";position:absolute}
+.beerIcon::before{left:2px;top:2px;width:10px;height:15px;border:1px solid #ffde99;border-radius:3px 3px 4px 4px;background:linear-gradient(#fff4dc 0 28%,#ffce56 29%,#e4932c 83%,#b36121)}
+.beerIcon::after{left:12px;top:6px;width:5px;height:8px;border:2px solid #ffde99;border-left:0;border-radius:0 4px 4px 0}
+@media(prefers-reduced-motion:reduce){.columns .projectBadge.arni span,.columns .projectBadge.napiwas .badgeLabel{animation:none}}
