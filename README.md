@@ -1,5 +1,17 @@
 # KITO Observatory
 
+## О проекте / токене
+
+KITO (Kito) — токен в сети TON с образом кота. В метаданных проекта он представлен как «cool cat on TON». Это самоописание проекта; конкретное назначение токена в доступном поле description не раскрыто.
+
+Контракт в TON: `EQCSLLVQ8qdhEqZUKaiKU7F6sVfnNPmQ4FsCpCo8olo795LP`.
+
+Основа описания — метаданные указанного контракта. Проверено: **2026-11-22**.
+
+Источники:
+
+- <https://tonapi.io/v2/jettons/EQCSLLVQ8qdhEqZUKaiKU7F6sVfnNPmQ4FsCpCo8olo795LP>
+
 Аналитика KITO на DeDust для **freebie.socool.ton**, на русском и английском. [Скачать index.html](https://raw.githubusercontent.com/Freebielife/KITO/main/index.html) и загрузить как корневой файл сайта в Resistance Tools.
 
 Расписание GitHub Actions — каждые 30 минут (возможны задержки GitHub). Внешний планировщик подготовлен, но требует подключения: [настройка cron-job.org](docs/scheduler.md).
