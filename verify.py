@@ -30,5 +30,5 @@ if "holders" in snapshot:
 page = (root / "index.html").read_text()
 payload = re.search(r'<script id="snapshot" type="application/json">(.*?)</script>', page, re.S)
 assert payload and json.loads(payload[1]) == snapshot
-assert not any(token in page for token in ("/*APP*/", "/*STYLE*/", "/*LOADER*/", "/*MARKET_CAP*/"))
+assert not any(token in page for token in ("/*APP*/", "/*STYLE*/", "/*LOADER*/", "/*MARKET_CAP*/", "/*BRAND_ATLAS*/"))
 print("Snapshot and standalone page validated.")

@@ -644,6 +644,43 @@ function chart(){
  volumeBars(start,end,width,left,right);
  $('chartInfo').textContent=[freshness(section),coverage(section,start),!model.tradeCount&&points.length?t('capNoTrades'):'',snapshot.holders?.asOf<section?.asOf?(lang==='ru'?'Предложение на ':'Supply as of ')+stamp(snapshot.holders.asOf):''].filter(Boolean).join(' · ');
 }
+function brandFlag(key){
+ const atlas=window.KITO_BRAND_ATLAS, pos=atlas?.positions?.[key];
+ if(!pos)return null;
+ const flag=el("span",undefined,"kitoFlag flag-"+key);
+ flag.setAttribute("aria-hidden","true");
+ if(!document.documentElement.style.getPropertyValue("--kito-atlas"))document.documentElement.style.setProperty("--kito-atlas",`url(data:${atlas.format};base64,${atlas.image_base64})`);
+ flag.style.backgroundSize=`${atlas.columns*100}% ${atlas.rows*100}%`;
+ flag.style.backgroundPosition=`${pos[0]*100/(atlas.columns-1)}% ${pos[1]*100/(atlas.rows-1)}%`;
+ return flag;
+}
+function addFlag(node,key){
+ if(!node||node.querySelector(":scope > .kitoFlag"))return;
+ const flag=brandFlag(key);if(flag){node.prepend(flag);node.classList.add("flagged")}
+}
+function venueFlag(name){return /ston/i.test(name)?"ston":/dedust/i.test(name)?"dedust":/tonco/i.test(name)?"tonco":null}
+function decorateFlags(){
+ addFlag(document.querySelector(".hero .eyebrow"),"ton");
+ addFlag(document.querySelector(".graph .eyebrow"),"dedust");
+ addFlag(document.querySelector("#activity .tag"),"dedust");
+ for(const card of document.querySelectorAll("#pools .poolCard")){
+   const heading=card.querySelector("h3");addFlag(heading,"kito");
+   const pairKey=heading?.textContent.split("/")[1]?.trim().split(/\s+/)[0]?.toLowerCase();
+   if(pairKey&&["gram","ludoman","usda","usdt"].includes(pairKey)&&!heading.querySelector(".pairFlag")){
+     const flag=brandFlag(pairKey);if(flag){flag.classList.add("pairFlag");heading.append(flag)}
+   }
+   const line=card.querySelector("p");addFlag(line,venueFlag(line?.textContent||""));
+ }
+ for(const a of document.querySelectorAll(".introLinks a,.resourceList a,#pools .poolActions a,#pools .poolSources a")){
+   const host=a.hostname;
+   const key=host==="t.me"?"telegram":host==="gram.org"?"gramorg":host.endsWith("dedust.io")?"dedust":host.endsWith("ston.fi")?"ston":host.includes("geckoterminal")?"gecko":host==="dexscreener.com"?"dexscreener":host==="linktr.ee"?"kito":null;
+   addFlag(a,key);
+ }
+}
+function tradeMotion(kind){
+ const motion=el("span",kind==="buy"?"↗":kind==="sell"?"↘":"🔥","tradeMotion "+kind);
+ motion.setAttribute("aria-hidden","true");return motion;
+}
 function stats(){
  const trades=snapshot.trades,burns=snapshot.burns&&snapshot.zeroBurns?{...snapshot.burns,asOf:Math.min(snapshot.burns.asOf,snapshot.zeroBurns.asOf),rows:burnRows()}:snapshot.burns;
  const within=s=>(s?.rows||[]).filter(r=>r.time>s.asOf-day&&r.time<=s.asOf);
@@ -657,7 +694,8 @@ function stats(){
    [t("burnedTotal")+" KITO",format(sum(within(burns),"kito")),t("events")+" · "+within(burns).length,burns,"burn"]];
  $("stats").replaceChildren(...values.map(([label,value,detail,source,cls])=>{
    const complete=source&&source.since<=source.asOf-day, item=el("div",undefined,"stat");
-   item.append(el("span",label,cls),el("b",complete?value:"—"),el("small",complete?detail:source?t("partial"):t("no")));return item;
+   const heading=el("span",label,cls);if(cls)heading.prepend(tradeMotion(cls));
+   item.append(heading,el("b",complete?value:"—"),el("small",complete?detail:source?t("partial"):t("no")));return item;
  }));
 }
 function row(first,sub,value,last){const a=el("div"),b=el("div"),d=el("div",undefined,"row");a.append(first,sub);b.append(value,last);d.append(a,b);return d}
@@ -673,10 +711,10 @@ function list(){
  $("feed").replaceChildren(...combined.slice(0,expanded?50:20).map(r=>{
    const who=el("small");who.append(walletIdentity(r.wallet,r.name,r.kind,{activity:true}));
    const label=r.method==="zero"?t("toZero"):t(r.kind);
-   const top=el("b");top.append(el("span",label,"badge "+r.kind),document.createTextNode(format(r.kito,4)+" KITO"));
+   const top=el("b"), badge=el("span",label,"badge "+r.kind);badge.prepend(tradeMotion(r.kind));top.append(badge,document.createTextNode(format(r.kito,4)+" KITO"));
    const right=el("small",r.ton?format(r.ton,4)+" GRAM":"");
    const meta=[r.kind!=="burn"?r.dex||"DeDust":"",stamp(r.time)].filter(Boolean).join(" · ");
-   const desktop=el("small",meta,"opDesktop");
+   const desktop=el("small",meta,"opDesktop");if(r.kind!=="burn")addFlag(desktop,venueFlag(r.dex||"DeDust"));
    desktop.append(document.createElement("br"), tx(r));
    const toggle=el("button",undefined,"opToggle");
    toggle.type="button";
@@ -685,7 +723,7 @@ function list(){
    const chevron=el("span");
    chevron.setAttribute("aria-hidden","true");
    toggle.append(chevron);
-   const full=el("small",meta,"opMobile");
+   const full=el("small",meta,"opMobile");if(r.kind!=="burn")addFlag(full,venueFlag(r.dex||"DeDust"));
    full.id="operation-"+r.tx;
    full.hidden=true;
    full.append(document.createElement("br"),tx(r));
@@ -696,6 +734,7 @@ function list(){
    };
    const item=row(top,who,right,desktop);
    item.classList.add("operationRow","trade-"+r.kind);
+   const watermark=brandFlag("kito");if(watermark){watermark.classList.add("operationWatermark");item.append(watermark)}
    item.append(toggle,full);
    return item
  }));
@@ -727,7 +766,7 @@ function ranks(){
  $("rank").replaceChildren(...data.map((r,i)=>{const title=el("b");title.append(rankPosition(i,previous?.[r.wallet]),walletIdentity(r.wallet,r.name,isHolder?lastActivity.get(r.wallet):"sell",{holder:isHolder}));return row(title,el("small",isHolder?t("balance"):t("sold")),el("b",format(isHolder?r.kito:Number(r.units)/1e9)+" KITO"),el("small",isHolder?format(r.share,4)+"%":(lang==="ru"?"Сделок: ":"Trades: ")+format(r.count,0)))}));if(!data.length)$("rank").append(el("p",source?t("none"):t("no"),"empty"))
 }
 function render(){document.documentElement.lang=lang;document.querySelectorAll("[data-t]").forEach(n=>n.textContent=t(n.dataset.t));for(const l of ["ru","en"]){$(l).classList.toggle("on",l===lang);$(l).setAttribute("aria-pressed",l===lang);$(l).onclick=()=>{lang=l;try{localStorage.setItem("kito-lang",l)}catch{}render()}}
- select("periods",t("periodNames"),period,i=>{period=i;render()});$("copy").textContent=t("copy");$("contract").href="https://gram.org/jetton/"+MASTER;$("contractAddress").textContent=MASTER;updateBurnTotals();chart();stats();list();ranks();renderLookup();renderSyncStatus()}
+ select("periods",t("periodNames"),period,i=>{period=i;render()});$("copy").textContent=t("copy");$("contract").href="https://gram.org/jetton/"+MASTER;$("contractAddress").textContent=MASTER;updateBurnTotals();chart();stats();list();ranks();renderLookup();renderSyncStatus();decorateFlags()}
 $("copy").onclick=async()=>{try{await navigator.clipboard.writeText(MASTER);$("copy").textContent=t("copied")}catch{window.prompt(t("copy"),MASTER)}};
 $("walletSearchForm").onsubmit=findWallet;
 $("largeTrades").onchange=$("minTradeSize").oninput=()=>{expanded=false;list()};

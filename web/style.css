@@ -328,3 +328,31 @@ html[lang="en"] #pools [lang="en"]{display:inline}
 @media(prefers-reduced-motion:reduce){.columns .projectBadge.arni span,.columns .projectBadge.napiwas .badgeLabel{animation:none}}
 
 .projectBadges .domainDetails{width:auto;max-width:100%;overflow-wrap:anywhere}
+
+/* Animated, self-contained approved flags. Motion uses only transforms. */
+.kitoFlag{display:inline-block;width:28px;height:28px;flex:0 0 28px;vertical-align:middle;border-radius:5px;background-image:var(--kito-atlas);background-repeat:no-repeat;transform-origin:12% 50%;animation:kitoFlagWave 3.4s ease-in-out infinite;pointer-events:none}
+.flagged{display:inline-flex;align-items:center;gap:7px;min-width:0}
+.hero .eyebrow,.graph .eyebrow{flex-wrap:wrap}
+.hero .eyebrow i,.graph .eyebrow i{display:none}
+.tag.flagged{white-space:normal}
+.tag .kitoFlag,.opDesktop .kitoFlag,.opMobile .kitoFlag{width:20px;height:20px;flex-basis:20px}
+#pools .poolCard h3.flagged,#pools .poolCard p.flagged{display:flex;flex-wrap:wrap;line-height:1.35}
+#pools .poolActions a.flagged{gap:6px}
+#pools .poolActions .kitoFlag{width:23px;height:23px;flex-basis:23px}
+.resourceList>a.flagged{justify-content:flex-start;overflow-wrap:anywhere}
+.resourceList>a::after,.introLinks a[href^="https:"]::after{display:none!important}
+.introLinks a.flagged{gap:5px}
+.introLinks .kitoFlag{width:23px;height:23px;flex-basis:23px}
+.tradeMotion{display:inline-block!important;margin-right:5px;font-size:16px;font-weight:800;line-height:1;animation:kitoTradePulse 2.4s ease-in-out infinite}
+.tradeMotion.buy{color:#75efb6}.tradeMotion.sell{color:#ff8d9d}.tradeMotion.burn{color:#ffb96a}
+.stat .tradeMotion.buy{color:#126042}.stat .tradeMotion.sell{color:#ba1830}
+.operationRow{position:relative;isolation:isolate;overflow:hidden}
+.operationRow .operationWatermark{position:absolute;z-index:-1;right:27%;top:50%;width:70px;height:70px;opacity:.11;transform:translateY(-50%) rotate(-12deg);animation:kitoWatermarkFloat 6s ease-in-out infinite}
+.operationRow .opDesktop.flagged,.operationRow .opMobile.flagged{display:block}
+.operationRow .opDesktop .kitoFlag,.operationRow .opMobile .kitoFlag{margin-right:5px}
+.projectBadge.burner{animation:kitoTradePulse 2.4s ease-in-out infinite}
+@keyframes kitoFlagWave{0%,100%{transform:perspective(110px) rotateY(-7deg) skewY(-2deg)}50%{transform:perspective(110px) rotateY(9deg) skewY(2deg)}}
+@keyframes kitoTradePulse{0%,100%{transform:translateY(0);opacity:.8}50%{transform:translateY(-2px);opacity:1}}
+@keyframes kitoWatermarkFloat{0%,100%{transform:translateY(-50%) rotate(-12deg)}50%{transform:translateY(-53%) rotate(-7deg)}}
+@media(max-width:640px){#feed .operationRow .opDesktop.flagged{display:none}#feed .operationRow .opMobile.flagged:not([hidden]){display:block}.operationRow .operationWatermark{right:25%;width:55px;height:55px}.resourceList>a.flagged{min-height:44px}}
+@media(prefers-reduced-motion:reduce){.kitoFlag,.tradeMotion,.projectBadge.burner{animation:none!important}}
